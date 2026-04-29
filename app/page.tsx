@@ -1,603 +1,751 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import {
-  Send, Mic, MicOff, Plus, Sparkles, ChevronRight,
-  User, Loader2, Menu, X, Trash2, MessageSquare,
-  Globe, Zap,
-} from 'lucide-react';
 
-/* ─── Types ─── */
+// ══════════════════════════════════════════════
+//  ALL GOOGLE TRANSLATE LANGUAGES (109 ta)
+// ══════════════════════════════════════════════
+const LANGUAGES = [
+  { code: 'uz', name: "O'zbek", native: "O'zbek" },
+  { code: 'en', name: 'English', native: 'English' },
+  { code: 'ru', name: 'Russian', native: 'Русский' },
+  { code: 'ar', name: 'Arabic', native: 'العربية', dir: 'rtl' },
+  { code: 'zh-CN', name: 'Chinese (Simplified)', native: '中文(简体)' },
+  { code: 'zh-TW', name: 'Chinese (Traditional)', native: '中文(繁體)' },
+  { code: 'es', name: 'Spanish', native: 'Español' },
+  { code: 'fr', name: 'French', native: 'Français' },
+  { code: 'de', name: 'German', native: 'Deutsch' },
+  { code: 'tr', name: 'Turkish', native: 'Türkçe' },
+  { code: 'hi', name: 'Hindi', native: 'हिन्दी' },
+  { code: 'ja', name: 'Japanese', native: '日本語' },
+  { code: 'ko', name: 'Korean', native: '한국어' },
+  { code: 'pt', name: 'Portuguese', native: 'Português' },
+  { code: 'it', name: 'Italian', native: 'Italiano' },
+  { code: 'uk', name: 'Ukrainian', native: 'Українська' },
+  { code: 'kk', name: 'Kazakh', native: 'Қазақша' },
+  { code: 'ky', name: 'Kyrgyz', native: 'Кыргызча' },
+  { code: 'tg', name: 'Tajik', native: 'Тоҷикӣ' },
+  { code: 'fa', name: 'Persian', native: 'فارسی', dir: 'rtl' },
+  { code: 'ur', name: 'Urdu', native: 'اردو', dir: 'rtl' },
+  { code: 'he', name: 'Hebrew', native: 'עברית', dir: 'rtl' },
+  { code: 'ps', name: 'Pashto', native: 'پښتو', dir: 'rtl' },
+  { code: 'sd', name: 'Sindhi', native: 'سنڌي', dir: 'rtl' },
+  { code: 'ug', name: 'Uyghur', native: 'ئۇيغۇرچە', dir: 'rtl' },
+  { code: 'yi', name: 'Yiddish', native: 'יידיש', dir: 'rtl' },
+  { code: 'af', name: 'Afrikaans', native: 'Afrikaans' },
+  { code: 'sq', name: 'Albanian', native: 'Shqip' },
+  { code: 'am', name: 'Amharic', native: 'አማርኛ' },
+  { code: 'hy', name: 'Armenian', native: 'Հայերեն' },
+  { code: 'az', name: 'Azerbaijani', native: 'Azərbaycan' },
+  { code: 'eu', name: 'Basque', native: 'Euskara' },
+  { code: 'be', name: 'Belarusian', native: 'Беларуская' },
+  { code: 'bn', name: 'Bengali', native: 'বাংলা' },
+  { code: 'bs', name: 'Bosnian', native: 'Bosanski' },
+  { code: 'bg', name: 'Bulgarian', native: 'Български' },
+  { code: 'ca', name: 'Catalan', native: 'Català' },
+  { code: 'ceb', name: 'Cebuano', native: 'Cebuano' },
+  { code: 'ny', name: 'Chichewa', native: 'Chichewa' },
+  { code: 'co', name: 'Corsican', native: 'Corsu' },
+  { code: 'hr', name: 'Croatian', native: 'Hrvatski' },
+  { code: 'cs', name: 'Czech', native: 'Čeština' },
+  { code: 'da', name: 'Danish', native: 'Dansk' },
+  { code: 'nl', name: 'Dutch', native: 'Nederlands' },
+  { code: 'eo', name: 'Esperanto', native: 'Esperanto' },
+  { code: 'et', name: 'Estonian', native: 'Eesti' },
+  { code: 'tl', name: 'Filipino', native: 'Filipino' },
+  { code: 'fi', name: 'Finnish', native: 'Suomi' },
+  { code: 'fy', name: 'Frisian', native: 'Frysk' },
+  { code: 'gl', name: 'Galician', native: 'Galego' },
+  { code: 'ka', name: 'Georgian', native: 'ქართული' },
+  { code: 'el', name: 'Greek', native: 'Ελληνικά' },
+  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી' },
+  { code: 'ht', name: 'Haitian Creole', native: 'Kreyòl' },
+  { code: 'ha', name: 'Hausa', native: 'Hausa' },
+  { code: 'haw', name: 'Hawaiian', native: "ʻŌlelo Hawaiʻi" },
+  { code: 'hmn', name: 'Hmong', native: 'Hmong' },
+  { code: 'hu', name: 'Hungarian', native: 'Magyar' },
+  { code: 'is', name: 'Icelandic', native: 'Íslenska' },
+  { code: 'ig', name: 'Igbo', native: 'Igbo' },
+  { code: 'id', name: 'Indonesian', native: 'Indonesia' },
+  { code: 'ga', name: 'Irish', native: 'Gaeilge' },
+  { code: 'jw', name: 'Javanese', native: 'Jawa' },
+  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ' },
+  { code: 'km', name: 'Khmer', native: 'ខ្មែរ' },
+  { code: 'ku', name: 'Kurdish', native: 'Kurdî' },
+  { code: 'lo', name: 'Lao', native: 'ລາວ' },
+  { code: 'la', name: 'Latin', native: 'Latina' },
+  { code: 'lv', name: 'Latvian', native: 'Latviešu' },
+  { code: 'lt', name: 'Lithuanian', native: 'Lietuvių' },
+  { code: 'lb', name: 'Luxembourgish', native: 'Lëtzebuergesch' },
+  { code: 'mk', name: 'Macedonian', native: 'Македонски' },
+  { code: 'mg', name: 'Malagasy', native: 'Malagasy' },
+  { code: 'ms', name: 'Malay', native: 'Melayu' },
+  { code: 'ml', name: 'Malayalam', native: 'മലയാളം' },
+  { code: 'mt', name: 'Maltese', native: 'Malti' },
+  { code: 'mi', name: 'Maori', native: 'Māori' },
+  { code: 'mr', name: 'Marathi', native: 'मराठी' },
+  { code: 'mn', name: 'Mongolian', native: 'Монгол' },
+  { code: 'my', name: 'Myanmar', native: 'မြန်မာ' },
+  { code: 'ne', name: 'Nepali', native: 'नेपाली' },
+  { code: 'no', name: 'Norwegian', native: 'Norsk' },
+  { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ' },
+  { code: 'pl', name: 'Polish', native: 'Polski' },
+  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
+  { code: 'ro', name: 'Romanian', native: 'Română' },
+  { code: 'sm', name: 'Samoan', native: 'Samoa' },
+  { code: 'gd', name: 'Scots Gaelic', native: 'Gàidhlig' },
+  { code: 'sr', name: 'Serbian', native: 'Српски' },
+  { code: 'st', name: 'Sesotho', native: 'Sesotho' },
+  { code: 'sn', name: 'Shona', native: 'Shona' },
+  { code: 'si', name: 'Sinhala', native: 'සිංහල' },
+  { code: 'sk', name: 'Slovak', native: 'Slovenčina' },
+  { code: 'sl', name: 'Slovenian', native: 'Slovenščina' },
+  { code: 'so', name: 'Somali', native: 'Soomaali' },
+  { code: 'su', name: 'Sundanese', native: 'Sunda' },
+  { code: 'sw', name: 'Swahili', native: 'Kiswahili' },
+  { code: 'sv', name: 'Swedish', native: 'Svenska' },
+  { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
+  { code: 'te', name: 'Telugu', native: 'తెలుగు' },
+  { code: 'th', name: 'Thai', native: 'ไทย' },
+  { code: 'vi', name: 'Vietnamese', native: 'Tiếng Việt' },
+  { code: 'cy', name: 'Welsh', native: 'Cymraeg' },
+  { code: 'xh', name: 'Xhosa', native: 'isiXhosa' },
+  { code: 'yo', name: 'Yoruba', native: 'Yorùbá' },
+  { code: 'zu', name: 'Zulu', native: 'isiZulu' },
+];
+
+// ══════════════════════════════════════════════
+//  UI TRANSLATIONS
+// ══════════════════════════════════════════════
+type UIStrings = {
+  powered: string; nc: string; convs: string; noc: string;
+  guest: string; gsub: string; sub: string; ultra: string;
+  ph: string; hint: string;
+  sugg: { lang: string; txt: string }[];
+};
+
+const T: Record<string, UIStrings> = {
+  uz: {
+    powered: 'ASENA ML TOMONIDAN', nc: 'Yangi suhbat', convs: 'SUHBATLAR',
+    noc: "Hali suhbat yo'q", guest: 'Mehmon foydalanuvchi', gsub: 'Kirish uchun bosqich 2',
+    sub: "Aqlli yordamchingiz. Har qanday tilda savol bering — men sizga yordam berishga tayyorman.",
+    ultra: 'Ultra-tez Asena ML xulosa', ph: "Xabar yozing... (Shift+Enter = yangi qator)",
+    hint: "ASENA AI · O'zbek · English · Русский · العربية · 中文 · Español · va boshqalar",
+    sugg: [
+      { lang: "O'zbek", txt: "Sun'iy intellekt kelajagi haqida gapir" },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: 'Русский', txt: 'Напиши стихотворение о весне' },
+      { lang: 'العربية', txt: 'اشرح لي كيف تعمل الشبكات العصبية' },
+    ],
+  },
+  en: {
+    powered: 'POWERED BY ASENA ML', nc: 'New Chat', convs: 'CONVERSATIONS',
+    noc: 'No conversations yet', guest: 'Guest User', gsub: 'Step 2 to sign in',
+    sub: "Your intelligent assistant. Ask in any language — I'm ready to help you.",
+    ultra: 'Ultra-fast Asena ML inference', ph: 'Type a message... (Shift+Enter = new line)',
+    hint: 'ASENA AI · English · O\'zbek · Русский · العربية · 中文 · Español · and more',
+    sugg: [
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: 'English', txt: 'Write me a poem about space' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Расскажи о будущем технологий' },
+    ],
+  },
+  ru: {
+    powered: 'НА БАЗЕ ASENA ML', nc: 'Новый чат', convs: 'БЕСЕДЫ',
+    noc: 'Нет бесед', guest: 'Гость', gsub: 'Шаг 2 для входа',
+    sub: 'Ваш умный помощник. Задавайте вопросы на любом языке — готов помочь.',
+    ultra: 'Сверхбыстрый вывод Asena ML', ph: 'Напишите сообщение... (Shift+Enter = новая строка)',
+    hint: 'ASENA AI · Русский · English · O\'zbek · العربية · 中文 · Español · и другие',
+    sugg: [
+      { lang: 'Русский', txt: 'Напиши стихотворение о весне' },
+      { lang: 'Русский', txt: 'Объясни квантовые вычисления просто' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+    ],
+  },
+  ar: {
+    powered: 'مدعوم بـ ASENA ML', nc: 'محادثة جديدة', convs: 'المحادثات',
+    noc: 'لا توجد محادثات بعد', guest: 'ضيف', gsub: 'الخطوة 2 لتسجيل الدخول',
+    sub: 'مساعدك الذكي. اسأل بأي لغة — أنا هنا للمساعدة.',
+    ultra: 'استنتاج Asena ML فائق السرعة', ph: 'اكتب رسالة... (Shift+Enter = سطر جديد)',
+    hint: 'ASENA AI · العربية · English · Русский · O\'zbek · 中文 · والمزيد',
+    sugg: [
+      { lang: 'العربية', txt: 'اشرح لي كيف تعمل الشبكات العصبية' },
+      { lang: 'العربية', txt: 'حدثني عن مستقبل الذكاء الاصطناعي' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+    ],
+  },
+  tr: {
+    powered: 'ASENA ML İLE', nc: 'Yeni Sohbet', convs: 'SOHBETLER',
+    noc: 'Henüz sohbet yok', guest: 'Misafir Kullanıcı', gsub: 'Giriş için adım 2',
+    sub: 'Akıllı asistanınız. Herhangi bir dilde soru sorun — yardım etmeye hazırım.',
+    ultra: 'Ultra hızlı Asena ML çıkarımı', ph: 'Mesaj yazın... (Shift+Enter = yeni satır)',
+    hint: "ASENA AI · Türkçe · English · Русский · العربية · 中文 · O'zbek · ve daha fazlası",
+    sugg: [
+      { lang: 'Türkçe', txt: 'Yapay zekanın geleceği hakkında konuş' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение о весне' },
+    ],
+  },
+  'zh-CN': {
+    powered: '由 ASENA ML 驱动', nc: '新对话', convs: '对话',
+    noc: '暂无对话', guest: '访客用户', gsub: '登录第2步',
+    sub: '您的智能助手。用任何语言提问 — 我随时准备帮助您。',
+    ultra: '超快速 Asena ML 推理', ph: '输入消息... (Shift+Enter = 换行)',
+    hint: "ASENA AI · 中文 · English · Русский · العربية · O'zbek · Español · 等等",
+    sugg: [
+      { lang: '中文', txt: '简单解释量子计算' },
+      { lang: '中文', txt: '人工智能的未来是什么？' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+    ],
+  },
+  es: {
+    powered: 'IMPULSADO POR ASENA ML', nc: 'Nueva Conversación', convs: 'CONVERSACIONES',
+    noc: 'No hay conversaciones', guest: 'Usuario Invitado', gsub: 'Paso 2 para iniciar sesión',
+    sub: "Tu asistente inteligente. Pregunta en cualquier idioma — estoy listo para ayudarte.",
+    ultra: 'Inferencia ultrarrápida de Asena ML', ph: 'Escribe un mensaje... (Shift+Enter = nueva línea)',
+    hint: "ASENA AI · Español · English · Русский · العربية · 中文 · O'zbek · y más",
+    sugg: [
+      { lang: 'Español', txt: 'Cuéntame sobre el futuro de la IA' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение о весне' },
+    ],
+  },
+  fr: {
+    powered: 'PROPULSÉ PAR ASENA ML', nc: 'Nouvelle Discussion', convs: 'CONVERSATIONS',
+    noc: 'Pas encore de conversations', guest: 'Utilisateur Invité', gsub: 'Étape 2 pour se connecter',
+    sub: "Votre assistant intelligent. Posez des questions dans n'importe quelle langue — je suis prêt à vous aider.",
+    ultra: "Inférence ultra-rapide d'Asena ML", ph: 'Tapez un message... (Shift+Enter = nouvelle ligne)',
+    hint: "ASENA AI · Français · English · Русский · العربية · 中文 · O'zbek · et plus",
+    sugg: [
+      { lang: 'Français', txt: "Explique-moi l'apprentissage automatique" },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение о весне' },
+    ],
+  },
+  de: {
+    powered: 'BETRIEBEN VON ASENA ML', nc: 'Neues Gespräch', convs: 'GESPRÄCHE',
+    noc: 'Noch keine Gespräche', guest: 'Gastbenutzer', gsub: 'Schritt 2 zum Einloggen',
+    sub: 'Ihr intelligenter Assistent. Stellen Sie Fragen in jeder Sprache — ich bin bereit zu helfen.',
+    ultra: 'Ultraschnelle Asena ML-Inferenz', ph: 'Nachricht schreiben... (Shift+Enter = neue Zeile)',
+    hint: "ASENA AI · Deutsch · English · Русский · العربية · 中文 · O'zbek · und mehr",
+    sugg: [
+      { lang: 'Deutsch', txt: 'Erkläre mir Quantencomputing einfach' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение' },
+    ],
+  },
+  hi: {
+    powered: 'ASENA ML द्वारा संचालित', nc: 'नई चैट', convs: 'बातचीत',
+    noc: 'अभी तक कोई बातचीत नहीं', guest: 'अतिथि उपयोगकर्ता', gsub: 'साइन इन के लिए चरण 2',
+    sub: 'आपका बुद्धिमान सहायक। किसी भी भाषा में प्रश्न पूछें — मैं मदद के लिए तैयार हूं।',
+    ultra: 'अल्ट्रा-फास्ट Asena ML इन्फेरेंस', ph: 'संदेश लिखें... (Shift+Enter = नई पंक्ति)',
+    hint: "ASENA AI · हिन्दी · English · Русский · العربية · 中文 · O'zbek · और अधिक",
+    sugg: [
+      { lang: 'हिन्दी', txt: 'AI का भविष्य क्या है?' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение' },
+    ],
+  },
+  ja: {
+    powered: 'ASENA ML 搭載', nc: '新しいチャット', convs: '会話',
+    noc: 'まだ会話がありません', guest: 'ゲストユーザー', gsub: 'ログインのステップ2',
+    sub: 'あなたのインテリジェントアシスタント。どんな言語でも質問してください。',
+    ultra: '超高速 Asena ML 推論', ph: 'メッセージを入力... (Shift+Enter = 改行)',
+    hint: "ASENA AI · 日本語 · English · Русский · العربية · 中文 · O'zbek · その他",
+    sugg: [
+      { lang: '日本語', txt: 'AIの未来について話して' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение' },
+    ],
+  },
+  ko: {
+    powered: 'ASENA ML 구동', nc: '새 채팅', convs: '대화',
+    noc: '아직 대화가 없습니다', guest: '게스트 사용자', gsub: '로그인 2단계',
+    sub: '당신의 지능형 어시스턴트. 어떤 언어로든 질문하세요.',
+    ultra: '초고속 Asena ML 추론', ph: '메시지 입력... (Shift+Enter = 새 줄)',
+    hint: "ASENA AI · 한국어 · English · Русский · العربية · 中文 · O'zbek · 더 보기",
+    sugg: [
+      { lang: '한국어', txt: 'AI의 미래에 대해 이야기해 줘' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение' },
+    ],
+  },
+  kk: {
+    powered: 'ASENA ML ҚУАТТАЛҒАН', nc: 'Жаңа сөйлесу', convs: 'СӨЙЛЕСУЛЕР',
+    noc: 'Әлі сөйлесулер жоқ', guest: 'Қонақ пайдаланушы', gsub: 'Кіру үшін 2-қадам',
+    sub: 'Сіздің ақылды көмекшіңіз. Кез келген тілде сұрақ қойыңыз.',
+    ultra: 'Өте жылдам Asena ML қорытындысы', ph: 'Хабар жазыңыз... (Shift+Enter = жаңа жол)',
+    hint: "ASENA AI · Қазақша · O'zbek · Русский · English · Arabic · және басқалары",
+    sugg: [
+      { lang: 'Қазақша', txt: 'AI болашағы туралы айт' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение' },
+    ],
+  },
+  uk: {
+    powered: 'НА БАЗІ ASENA ML', nc: 'Нова розмова', convs: 'РОЗМОВИ',
+    noc: 'Ще немає розмов', guest: 'Гість', gsub: 'Крок 2 для входу',
+    sub: 'Ваш розумний помічник. Ставте запитання будь-якою мовою — готовий допомогти.',
+    ultra: 'Надшвидкий висновок Asena ML', ph: 'Напишіть повідомлення... (Shift+Enter = новий рядок)',
+    hint: "ASENA AI · Українська · English · Русский · العربية · 中文 · O'zbek · та інші",
+    sugg: [
+      { lang: 'Українська', txt: 'Розкажи про майбутнє штучного інтелекту' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение' },
+    ],
+  },
+  pt: {
+    powered: 'POWERED BY ASENA ML', nc: 'Nova Conversa', convs: 'CONVERSAS',
+    noc: 'Sem conversas ainda', guest: 'Usuário Convidado', gsub: 'Passo 2 para entrar',
+    sub: 'Seu assistente inteligente. Pergunte em qualquer idioma — estou pronto para ajudar.',
+    ultra: 'Inferência ultra-rápida do Asena ML', ph: 'Digite uma mensagem... (Shift+Enter = nova linha)',
+    hint: "ASENA AI · Português · English · Русский · العربية · 中文 · O'zbek · e mais",
+    sugg: [
+      { lang: 'Português', txt: 'Fale sobre o futuro da IA' },
+      { lang: 'English', txt: 'Explain quantum computing simply' },
+      { lang: "O'zbek", txt: "Sun'iy intellekt haqida gapir" },
+      { lang: 'Русский', txt: 'Напиши стихотворение' },
+    ],
+  },
+};
+
+function getT(code: string): UIStrings {
+  if (T[code]) return T[code];
+  if (code.startsWith('zh')) return T['zh-CN'];
+  return T['en'];
+}
+
+// ══════════════════════════════════════════════
+//  TYPES
+// ══════════════════════════════════════════════
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  timestamp: Date;
+}
+interface Conversation {
+  id: string;
+  title: string;
+  messages: Message[];
 }
 
-/* ─── Suggestion prompts (multilingual demo) ─── */
-const SUGGESTIONS = [
-  { text: "Sun'iy intellekt kelajagi haqida gapir", lang: "🇺🇿 O'zbek" },
-  { text: "Explain quantum computing simply", lang: "🇬🇧 English" },
-  { text: "Напиши стихотворение о весне", lang: "🇷🇺 Русский" },
-  { text: "اشرح لي كيف تعمل الشبكات العصبية", lang: "🇸🇦 العربية" },
-];
+// ══════════════════════════════════════════════
+//  ICONS
+// ══════════════════════════════════════════════
+const StarIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <path d="M12 2L14.8 9.2H22.5L16.3 13.8L18.6 21L12 16.4L5.4 21L7.7 13.8L1.5 9.2H9.2L12 2Z" fill="white" opacity="0.95" />
+    <circle cx="12" cy="11.5" r="2.8" fill="rgba(255,255,255,0.55)" />
+  </svg>
+);
+const StarSmall = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+    <path d="M12 2L14.8 9.2H22.5L16.3 13.8L18.6 21L12 16.4L5.4 21L7.7 13.8L1.5 9.2H9.2L12 2Z" fill="white" opacity="0.9" />
+  </svg>
+);
 
-/* ─── Simple markdown renderer ─── */
-function renderContent(text: string) {
+// ══════════════════════════════════════════════
+//  MARKDOWN RENDERER (simple)
+// ══════════════════════════════════════════════
+function renderMd(text: string) {
   return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/```([\w]*)\n?([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>')
+    .replace(/`([^`\n]+)`/g, '<code class="inline-code">$1</code>')
+    .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^### (.+)/gm, '<h3 class="md-h3">$1</h3>')
+    .replace(/^## (.+)/gm, '<h2 class="md-h2">$1</h2>')
+    .replace(/^# (.+)/gm, '<h1 class="md-h1">$1</h1>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" class="md-link">$1</a>')
     .replace(/\n/g, '<br/>');
 }
 
-/* ─── Main Component ─── */
-export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+// ══════════════════════════════════════════════
+//  MAIN COMPONENT
+// ══════════════════════════════════════════════
+export default function Home() {
+  const [langCode, setLangCode] = useState('uz');
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const [streamingId, setStreamingId] = useState<string | null>(null);
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<any>(null);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  /* ─── Responsive sidebar ─── */
-  useEffect(() => {
-    const check = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) setSidebarOpen(false);
-      else setSidebarOpen(true);
-    };
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
+  const s = getT(langCode);
+  const lang = LANGUAGES.find(l => l.c === langCode);
+  const isRTL = lang?.dir === 'rtl';
+  const activeConv = conversations.find(c => c.id === activeId);
 
-  /* ─── Auto-scroll ─── */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [activeConv?.messages]);
 
-  /* ─── Auto-resize textarea ─── */
   useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        newChat();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  const newChat = useCallback(() => {
+    setActiveId(null);
+    setInput('');
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height =
-        Math.min(textareaRef.current.scrollHeight, 200) + 'px';
     }
-  }, [input]);
+  }, []);
 
-  /* ─── Voice recognition ─── */
-  const toggleVoice = useCallback(() => {
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
+  const autoResize = () => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 150) + 'px';
+  };
 
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("Brauzeringiz ovozli kirishni qo'llab-quvvatlamaydi. Chrome yoki Edge ishlating.");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    // No lang = browser uses user's system language; model auto-detects
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => setIsListening(true);
-
-    recognition.onresult = (event: any) => {
-      const transcript = Array.from(event.results)
-        .map((result: any) => result[0].transcript)
-        .join('');
-      setInput(transcript);
-    };
-
-    recognition.onerror = (e: any) => {
-      console.error('Speech error:', e.error);
-      setIsListening(false);
-    };
-
-    recognition.onend = () => setIsListening(false);
-
-    recognition.start();
-    recognitionRef.current = recognition;
-  }, [isListening]);
-
-  /* ─── Send message ─── */
-  const sendMessage = useCallback(
-    async (overrideText?: string) => {
-      const content = (overrideText ?? input).trim();
-      if (!content || isLoading) return;
-
-      const userId = `u-${Date.now()}`;
-      const assistantId = `a-${Date.now() + 1}`;
-
-      const userMsg: Message = {
-        id: userId,
-        role: 'user',
-        content,
-        timestamp: new Date(),
-      };
-
-      const assistantMsg: Message = {
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, userMsg, assistantMsg]);
-      setInput('');
-      setIsLoading(true);
-      setStreamingId(assistantId);
-      if (isMobile) setSidebarOpen(false);
-
-      try {
-        const apiMessages = [...messages, userMsg].map((m) => ({
-          role: m.role,
-          content: m.content,
-        }));
-
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: apiMessages }),
-        });
-
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
-        if (!res.body) throw new Error('No response body');
-
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const raw = decoder.decode(value);
-          const lines = raw.split('\n');
-
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
-            const data = line.slice(6).trim();
-            if (data === '[DONE]') break;
-            try {
-              const { text } = JSON.parse(data);
-              if (text) {
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === assistantId
-                      ? { ...m, content: m.content + text }
-                      : m,
-                  ),
-                );
-              }
-            } catch {
-              // Skip malformed chunks
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Chat error:', err);
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? {
-                  ...m,
-                  content:
-                    '⚠️ Xatolik yuz berdi. Iltimos, GROQ_API_KEY ni tekshiring va qaytadan urinib ko\'ring.',
-                }
-              : m,
-          ),
-        );
-      } finally {
-        setIsLoading(false);
-        setStreamingId(null);
-      }
-    },
-    [input, messages, isLoading, isMobile],
-  );
-
-  /* ─── Keyboard handler ─── */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      if (input.trim() && !loading) sendMessage();
     }
   };
 
-  const clearChat = () => {
-    setMessages([]);
+  const sendMessage = async (overrideText?: string) => {
+    const text = (overrideText ?? input).trim();
+    if (!text || loading) return;
     setInput('');
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+
+    const userMsg: Message = { id: Date.now().toString(), role: 'user', content: text };
+    let convId = activeId;
+
+    if (!convId) {
+      convId = Date.now().toString();
+      const newConv: Conversation = {
+        id: convId,
+        title: text.length > 40 ? text.slice(0, 40) + '…' : text,
+        messages: [userMsg],
+      };
+      setConversations(prev => [newConv, ...prev]);
+      setActiveId(convId);
+    } else {
+      setConversations(prev =>
+        prev.map(c => c.id === convId ? { ...c, messages: [...c.messages, userMsg] } : c)
+      );
+    }
+
+    setLoading(true);
+
+    try {
+      const currentConv = conversations.find(c => c.id === convId);
+      const history = [
+        ...(currentConv?.messages ?? []),
+        userMsg,
+      ].map(m => ({ role: m.role, content: m.content }));
+
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+
+      const data = await res.json();
+      const reply = data.content ?? data.message ?? "Javob olishda xatolik yuz berdi.";
+
+      const aiMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: reply,
+      };
+      setConversations(prev =>
+        prev.map(c => c.id === convId ? { ...c, messages: [...c.messages, aiMsg] } : c)
+      );
+    } catch {
+      const errMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: '⚠️ Ulanishda xatolik yuz berdi. Iltimos qayta urinib ko\'ring.',
+      };
+      setConversations(prev =>
+        prev.map(c => c.id === convId ? { ...c, messages: [...c.messages, errMsg] } : c)
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const isEmpty = messages.length === 0;
+  const showWelcome = !activeId;
 
-  /* ═══════════════════════════════════════════
-     RENDER
-  ═══════════════════════════════════════════ */
   return (
-    <div className="relative flex h-screen bg-[#08090f] text-[#e2e4f0] overflow-hidden">
-      {/* Background orbs */}
-      <div className="bg-orb bg-orb-1" />
-      <div className="bg-orb bg-orb-2" />
-
-      {/* Mobile overlay */}
-      {sidebarOpen && isMobile && (
-        <div
-          className="fixed inset-0 bg-black/60 z-20 backdrop-blur-sm"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
+    <div
+      className="flex h-screen bg-[#09090f] text-[#e8e8f2] overflow-hidden"
+      dir={isRTL ? 'rtl' : 'ltr'}
+    >
       {/* ─── SIDEBAR ─── */}
       <aside
-        className={`
-          fixed md:relative z-30 md:z-auto
-          flex flex-col w-[260px] h-full
-          bg-[#0a0b14] border-r border-white/[0.06]
-          transition-transform duration-300 ease-out
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-          ${!sidebarOpen && !isMobile ? 'md:w-0 md:border-0 md:overflow-hidden' : ''}
-        `}
-        style={{ minWidth: sidebarOpen || isMobile ? undefined : 0 }}
+        className={`flex flex-col border-r border-[#252538] bg-[#0d0d16] transition-all duration-300 overflow-hidden
+          ${sidebarOpen ? 'w-[262px] min-w-[262px] px-[10px] py-[14px]' : 'w-0 min-w-0 p-0'}`}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.06] flex-shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
-              <Sparkles size={15} className="text-white" />
-            </div>
-            <div>
-              <h1 className="font-syne font-bold text-[15px] gradient-text leading-none">
-                ASENA AI
-              </h1>
-              <p className="text-[9px] text-[#3a3d55] mt-0.5 tracking-widest uppercase">
-                Powered by Groq
-              </p>
-            </div>
+        <div className="flex items-center gap-3 pb-4 border-b border-[#252538] mb-3">
+          <div className="w-9 h-9 min-w-9 rounded-[10px] bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center shadow-[0_0_24px_rgba(139,92,246,0.4)]">
+            <StarIcon />
           </div>
-          {isMobile && (
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="p-1 rounded-lg hover:bg-white/[0.06] text-[#6b7090] hover:text-white transition-colors"
-            >
-              <X size={16} />
-            </button>
-          )}
+          <div>
+            <h1 className="font-['Oxanium'] text-[14px] font-extrabold tracking-[1.5px]">ASENA AI</h1>
+            <p className="text-[9px] text-[#00e5ff] tracking-[2px] font-semibold mt-0.5">{s.powered}</p>
+          </div>
         </div>
 
-        {/* New Chat button */}
-        <div className="px-3 pt-3 flex-shrink-0">
-          <button
-            onClick={clearChat}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.01] text-[12px] text-[#8b90b0] hover:bg-white/[0.05] hover:text-white hover:border-violet-500/30 transition-all duration-200 group"
-          >
-            <Plus size={14} className="group-hover:rotate-90 transition-transform duration-300" />
-            <span>Yangi suhbat</span>
-            <kbd className="ml-auto text-[9px] text-[#3a3d55] border border-white/[0.06] rounded px-1.5 py-0.5">
-              Ctrl N
-            </kbd>
-          </button>
-        </div>
+        {/* New Chat */}
+        <button
+          onClick={newChat}
+          className="flex items-center justify-between bg-[#13131f] border border-[#252538] rounded-[10px] px-3 py-2 text-[13.5px] cursor-pointer mb-4 hover:border-[#8b5cf6] hover:bg-[#18182a] transition-all"
+        >
+          <div className="flex items-center gap-2">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span>{s.nc}</span>
+          </div>
+          <span className="bg-[#18182a] border border-[#252538] rounded px-1 py-0.5 text-[10px] text-[#7777a0]">Ctrl N</span>
+        </button>
 
-        {/* Chat history */}
-        <div className="flex-1 overflow-y-auto px-3 mt-3">
-          <p className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#2e3050]">
-            Suhbatlar
-          </p>
+        <p className="text-[10px] font-semibold tracking-[1.5px] text-[#7777a0] px-1 pb-2">{s.convs}</p>
 
-          {messages.length > 0 ? (
-            <button
-              className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-[12px] text-[#8b90b0] hover:bg-white/[0.04] hover:text-white transition-all group"
-              onClick={() => {}}
-            >
-              <MessageSquare size={13} className="flex-shrink-0 text-violet-500/60" />
-              <span className="truncate text-left">
-                {messages[0]?.content.slice(0, 28)}
-                {messages[0]?.content.length > 28 ? '…' : ''}
-              </span>
-            </button>
+        {/* Chat list */}
+        <div className="flex-1 overflow-y-auto flex flex-col gap-0.5 scrollbar-thin">
+          {conversations.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-7 text-[#7777a0] text-[12.5px] opacity-70">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.45">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              <span>{s.noc}</span>
+            </div>
           ) : (
-            <div className="px-3 py-8 flex flex-col items-center gap-2">
-              <MessageSquare size={28} className="text-[#1e2035]" />
-              <p className="text-[11px] text-[#2e3050] text-center">
-                Hali suhbat yo'q
-              </p>
-            </div>
+            conversations.map(conv => (
+              <div
+                key={conv.id}
+                onClick={() => setActiveId(conv.id)}
+                className={`px-2.5 py-2 rounded-lg cursor-pointer text-[12.5px] truncate transition-all
+                  ${activeId === conv.id
+                    ? 'bg-[#13131f] text-[#e8e8f2]'
+                    : 'text-[#7777a0] hover:bg-[#13131f] hover:text-[#e8e8f2]'
+                  }`}
+              >
+                {conv.title}
+              </div>
+            ))
           )}
         </div>
 
-        {/* Model info */}
-        <div className="px-3 pb-3 flex-shrink-0">
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-            <Zap size={12} className="text-emerald-400" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] text-[#6b7090]">Llama 3.3 70B</p>
-            </div>
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        {/* Bottom */}
+        <div className="border-t border-[#252538] pt-3 flex flex-col gap-2">
+          <div className="flex items-center gap-2 px-2 py-1.5 bg-[#13131f] rounded-lg text-[12px] text-[#7777a0]">
+            <span className="w-[7px] h-[7px] min-w-[7px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]" />
+            <span>Asena ML-1</span>
           </div>
-
-          {/* User placeholder (Phase 2: Google Auth) */}
-          <div className="flex items-center gap-2.5 px-3 py-2.5 mt-1 rounded-xl hover:bg-white/[0.03] cursor-pointer transition-colors group">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500/30 to-cyan-500/30 border border-violet-500/20 flex items-center justify-center text-[10px] font-bold text-violet-300">
-              U
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium text-[#8b90b0] group-hover:text-white transition-colors truncate">
-                Mehmon foydalanuvchi
-              </p>
-              <p className="text-[9px] text-[#2e3050]">
-                Kirish uchun bosqich 2
-              </p>
+          <div className="flex items-center gap-2.5 p-2 rounded-lg cursor-pointer hover:bg-[#13131f] transition-colors">
+            <div className="w-8 h-8 min-w-8 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center text-[13px] font-bold">U</div>
+            <div>
+              <p className="text-[12.5px] font-medium">{s.guest}</p>
+              <p className="text-[11px] text-[#7777a0]">{s.gsub}</p>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* ─── MAIN AREA ─── */}
-      <main className="relative flex-1 flex flex-col min-w-0 z-10">
-        {/* Header */}
-        <header className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.05] bg-[#08090f]/80 backdrop-blur-md flex-shrink-0">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 rounded-lg hover:bg-white/[0.06] text-[#6b7090] hover:text-white transition-colors"
-            aria-label="Toggle sidebar"
-          >
-            <Menu size={17} />
-          </button>
+      {/* ─── MAIN ─── */}
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[12px] text-[#6b7090]">
-              Groq · Llama 3.3 70B Versatile
-            </span>
-          </div>
-
-          <div className="ml-auto flex items-center gap-2">
-            <div className="flex items-center gap-1.5 text-[11px] text-[#4a5070] border border-white/[0.05] rounded-full px-2.5 py-1">
-              <Globe size={11} />
-              <span>Har qanday til</span>
+        {/* Topbar */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#252538] bg-[#09090f] flex-shrink-0">
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setSidebarOpen(v => !v)}
+              className="p-1.5 rounded-lg text-[#7777a0] hover:text-[#e8e8f2] hover:bg-[#13131f] transition-all"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-2 text-[13px] text-[#7777a0]">
+              <span className="w-[7px] h-[7px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]" />
+              <span>Asena ML-1 Versatile</span>
             </div>
-
-            {messages.length > 0 && (
-              <button
-                onClick={clearChat}
-                title="Suhbatni tozalash"
-                className="p-1.5 rounded-lg hover:bg-red-500/10 text-[#4a5070] hover:text-red-400 transition-colors"
-              >
-                <Trash2 size={15} />
-              </button>
-            )}
           </div>
-        </header>
 
-        {/* Messages container */}
-        <div
-          ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto"
-          style={{ scrollbarWidth: 'thin' }}
-        >
-          {isEmpty ? (
-            /* ─── Empty State ─── */
-            <div className="flex flex-col items-center justify-center min-h-full px-4 py-12 animate-fade-up">
-              {/* Logo */}
-              <div className="relative mb-7 animate-float">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-cyan-500 flex items-center justify-center shadow-2xl">
-                  <Sparkles size={36} className="text-white" />
-                </div>
-                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500 opacity-20 blur-lg animate-glow-pulse" />
+          {/* Language selector */}
+          <div className="flex items-center gap-2">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7777a0" strokeWidth="1.8">
+              <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            <select
+              value={langCode}
+              onChange={e => setLangCode(e.target.value)}
+              className="bg-[#13131f] border border-[#252538] rounded-lg text-[#e8e8f2] text-[12.5px] px-2 py-1.5 cursor-pointer outline-none focus:border-[#8b5cf6] transition-colors max-w-[190px]"
+              style={{ fontFamily: 'inherit' }}
+            >
+              {LANGUAGES.map(l => (
+                <option key={l.c + l.nat} value={l.c} style={{ background: '#13131f' }}>
+                  {l.native}  —  {l.n}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Chat area */}
+        <div className="flex-1 overflow-y-auto flex flex-col">
+          {showWelcome ? (
+            /* ── WELCOME ── */
+            <div className="flex-1 flex flex-col items-center justify-center px-5 py-10 gap-4">
+              <div className="w-[82px] h-[82px] rounded-[22px] bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center animate-pulse-glow shadow-[0_0_50px_rgba(139,92,246,0.45)]">
+                <StarIcon />
               </div>
-
-              <h2 className="font-syne font-extrabold text-3xl md:text-4xl text-center mb-3 gradient-text-shimmer">
+              <h2 className="font-['Oxanium'] text-[44px] font-extrabold tracking-[3px] bg-gradient-to-r from-[#8b5cf6] to-[#06b6d4] bg-clip-text text-transparent">
                 ASENA AI
               </h2>
-              <p className="text-[#6b7090] text-center text-[13px] max-w-sm mb-2 leading-relaxed">
-                Aqlli yordamchingiz. Har qanday tilda savol bering — men sizga yordam berishga tayyorman.
-              </p>
-              <div className="flex items-center gap-1.5 mb-10 text-[11px] text-[#4a5070]">
-                <Zap size={11} className="text-violet-400" />
-                <span>Ultra-fast Groq inference</span>
+              <p className="text-center text-[#7777a0] text-[15px] max-w-[500px] leading-relaxed">{s.sub}</p>
+              <div className="flex items-center gap-1.5 text-[12px] text-[#00e5ff] opacity-80">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                <span>{s.ultra}</span>
               </div>
-
-              {/* Suggestion cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
-                {SUGGESTIONS.map((s, i) => (
-                  <button
+              {/* Suggestions */}
+              <div className="grid grid-cols-2 gap-2.5 max-w-[680px] w-full mt-2">
+                {s.sugg.map((sg, i) => (
+                  <div
                     key={i}
-                    onClick={() => sendMessage(s.text)}
-                    className="suggestion-card flex flex-col gap-1.5 px-4 py-3 rounded-xl border border-white/[0.07] bg-white/[0.01] text-left group"
-                    style={{ animationDelay: `${i * 80}ms` }}
+                    onClick={() => sendMessage(sg.txt)}
+                    className="bg-[#13131f] border border-[#252538] rounded-xl p-3.5 cursor-pointer hover:border-[#8b5cf6] hover:bg-[#18182a] hover:-translate-y-0.5 transition-all hover:shadow-[0_8px_24px_rgba(139,92,246,0.15)]"
                   >
-                    <span className="text-[10px] text-[#4a5070] flex items-center gap-1">
-                      {s.lang}
-                    </span>
-                    <span className="text-[12px] text-[#8b90b0] group-hover:text-white transition-colors line-clamp-2 leading-relaxed">
-                      {s.text}
-                    </span>
-                    <ChevronRight
-                      size={12}
-                      className="text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity mt-auto self-end"
-                    />
-                  </button>
+                    <p className="text-[11px] text-[#7777a0] mb-1">{sg.lang}</p>
+                    <p className="text-[13.5px] font-medium leading-snug">{sg.txt}</p>
+                  </div>
                 ))}
               </div>
             </div>
           ) : (
-            /* ─── Messages ─── */
-            <div className="max-w-3xl mx-auto px-4 py-6 space-y-8">
-              {messages.map((msg, index) => (
-                <div
-                  key={msg.id}
-                  className={`flex gap-3 animate-fade-up ${
-                    msg.role === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
-                  style={{ animationDelay: '0ms' }}
-                >
-                  {/* AI Avatar */}
-                  {msg.role === 'assistant' && (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/10 mt-0.5">
-                      <Sparkles size={14} className="text-white" />
-                    </div>
-                  )}
-
-                  <div
-                    className={`flex flex-col ${
-                      msg.role === 'user' ? 'items-end max-w-[80%]' : 'items-start max-w-[85%] md:max-w-[75%]'
-                    }`}
-                  >
-                    {msg.role === 'user' ? (
-                      /* User bubble */
-                      <div className="px-4 py-3 rounded-2xl rounded-tr-sm bg-gradient-to-br from-violet-600/25 to-violet-900/30 border border-violet-500/15 text-[14px] leading-relaxed text-white/90">
-                        {msg.content}
-                      </div>
-                    ) : (
-                      /* AI message */
-                      <div className="text-[14px] leading-[1.85] text-[#c8cae0] message-content">
-                        {msg.content ? (
-                          <span dangerouslySetInnerHTML={{ __html: renderContent(msg.content) }} />
-                        ) : (
-                          /* Loading dots */
-                          <span className="inline-flex items-center gap-1 py-2">
-                            {[0, 150, 300].map((delay) => (
-                              <span
-                                key={delay}
-                                className="w-2 h-2 rounded-full bg-violet-400 animate-bounce"
-                                style={{ animationDelay: `${delay}ms` }}
-                              />
-                            ))}
-                          </span>
-                        )}
-                        {/* Streaming cursor */}
-                        {streamingId === msg.id && msg.content && (
-                          <span className="inline-block w-[2px] h-4 bg-violet-400 ml-0.5 align-middle animate-cursor-blink" />
-                        )}
-                      </div>
-                    )}
-
-                    {/* Timestamp */}
-                    <p className="text-[9px] text-[#2e3050] mt-1.5 px-1">
-                      {msg.timestamp.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
+            /* ── MESSAGES ── */
+            <div className="flex flex-col gap-3.5 p-5 flex-1">
+              {activeConv?.messages.map(msg => (
+                <div key={msg.id} className={`flex gap-2.5 max-w-[800px] w-full mx-auto ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`w-[30px] h-[30px] min-w-[30px] rounded-lg flex items-center justify-center font-bold text-[13px] flex-shrink-0 ${msg.role === 'assistant' ? 'bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4]' : 'bg-[#252538] text-[#7777a0]'}`}>
+                    {msg.role === 'assistant' ? <StarSmall /> : 'U'}
                   </div>
-
-                  {/* User Avatar */}
-                  {msg.role === 'user' && (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-[#13141f] border border-white/[0.08] flex items-center justify-center mt-0.5">
-                      <User size={14} className="text-[#6b7090]" />
-                    </div>
-                  )}
+                  <div
+                    className={`rounded-xl px-4 py-3 text-[13.5px] leading-[1.75] max-w-[calc(100%-46px)] break-words border
+                      ${msg.role === 'user'
+                        ? 'bg-[rgba(139,92,246,0.12)] border-[rgba(139,92,246,0.28)]'
+                        : 'bg-[#13131f] border-[#252538]'
+                      }`}
+                    dangerouslySetInnerHTML={{ __html: renderMd(msg.content) }}
+                  />
                 </div>
               ))}
+              {loading && (
+                <div className="flex gap-2.5 max-w-[800px] w-full mx-auto">
+                  <div className="w-[30px] h-[30px] min-w-[30px] rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center flex-shrink-0">
+                    <StarSmall />
+                  </div>
+                  <div className="bg-[#13131f] border border-[#252538] rounded-xl px-4 py-3">
+                    <div className="flex gap-1">
+                      {[0, 1, 2].map(i => (
+                        <span
+                          key={i}
+                          className="w-1.5 h-1.5 bg-[#8b5cf6] rounded-full animate-bounce"
+                          style={{ animationDelay: `${i * 0.22}s` }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
           )}
         </div>
 
-        {/* ─── Input Area ─── */}
-        <div className="flex-shrink-0 px-4 pt-2 pb-4 bg-gradient-to-t from-[#08090f] via-[#08090f]/95 to-transparent">
-          <div className="max-w-3xl mx-auto">
-            {/* Voice indicator */}
-            {isListening && (
-              <div className="flex items-center justify-center gap-2 mb-2 text-[12px] text-red-400 animate-pulse">
-                <div className="flex gap-0.5">
-                  {[1, 1.5, 2, 1.5, 1].map((h, i) => (
-                    <div
-                      key={i}
-                      className="w-0.5 rounded-full bg-red-400 animate-bounce"
-                      style={{
-                        height: `${h * 10}px`,
-                        animationDelay: `${i * 100}ms`,
-                      }}
-                    />
-                  ))}
-                </div>
-                <span>Tinglanmoqda — gapiring...</span>
-                <div className="flex gap-0.5">
-                  {[1, 1.5, 2, 1.5, 1].map((h, i) => (
-                    <div
-                      key={i}
-                      className="w-0.5 rounded-full bg-red-400 animate-bounce"
-                      style={{
-                        height: `${h * 10}px`,
-                        animationDelay: `${i * 100}ms`,
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Input box */}
-            <div
-              className="input-wrapper flex items-end gap-2 px-4 py-3 bg-[#0f1019] rounded-2xl border border-white/[0.08] transition-all duration-200 shadow-2xl shadow-black/40"
-            >
+        {/* Input area */}
+        <div className="px-4 pb-4 pt-2.5 flex-shrink-0">
+          <div className="max-w-[800px] mx-auto">
+            <div className={`flex items-end gap-2 bg-[#18182a] border rounded-[14px] px-3 py-2.5 transition-colors ${loading ? 'border-[#252538]' : 'border-[#252538] focus-within:border-[rgba(139,92,246,0.7)]'}`}>
               <textarea
                 ref={textareaRef}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={e => { setInput(e.target.value); autoResize(); }}
                 onKeyDown={handleKeyDown}
-                placeholder={
-                  isListening
-                    ? '🎙 Gapiring, tinglanmoqda...'
-                    : "Xabar yozing... (Shift+Enter = yangi qator)"
-                }
+                placeholder={s.ph}
                 rows={1}
-                disabled={isLoading}
-                className="flex-1 bg-transparent text-[14px] text-white placeholder-[#2e3050] resize-none outline-none max-h-[180px] leading-relaxed py-0.5 disabled:opacity-50"
+                disabled={loading}
+                className="flex-1 bg-transparent border-none outline-none text-[13.5px] text-[#e8e8f2] placeholder:text-[#7777a0] resize-none max-h-[150px] leading-[1.6] min-h-[22px] disabled:opacity-60"
+                style={{ fontFamily: 'inherit' }}
               />
-
-              <div className="flex items-center gap-1.5 pb-0.5 flex-shrink-0">
-                {/* Voice button */}
-                <button
-                  onClick={toggleVoice}
-                  title={isListening ? "To'xtatish (Esc)" : 'Ovozli kirish'}
-                  className={`p-2 rounded-xl transition-all duration-200 ${
-                    isListening
-                      ? 'bg-red-500/15 text-red-400 border border-red-500/25 animate-pulse'
-                      : 'text-[#4a5070] hover:text-violet-400 hover:bg-violet-500/10'
-                  }`}
-                >
-                  {isListening ? <MicOff size={17} /> : <Mic size={17} />}
+              <div className="flex items-center gap-1.5">
+                <button className="p-1.5 rounded-lg text-[#7777a0] hover:text-[#e8e8f2] hover:bg-[#13131f] transition-all">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" />
+                  </svg>
                 </button>
-
-                {/* Send button */}
                 <button
                   onClick={() => sendMessage()}
-                  disabled={!input.trim() || isLoading}
-                  className="p-2 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 text-white disabled:opacity-25 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-violet-500/25 hover:scale-105 active:scale-95 transition-all duration-200"
+                  disabled={!input.trim() || loading}
+                  className="bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] rounded-lg p-2 flex items-center text-white disabled:opacity-35 disabled:cursor-not-allowed hover:opacity-85 active:scale-95 transition-all"
                 >
-                  {isLoading ? (
-                    <Loader2 size={17} className="animate-spin" />
-                  ) : (
-                    <Send size={17} />
-                  )}
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
                 </button>
               </div>
             </div>
-
-            <p className="text-center text-[10px] text-[#1e2035] mt-2">
-              ASENA AI · O'zbek · English · Русский · العربية · 中文 · Español · va boshqalar
-            </p>
+            <p className="text-center text-[11px] text-[#7777a0] mt-2 opacity-70">{s.hint}</p>
           </div>
         </div>
-      </main>
+      </div>
+
+      {/* Inline styles for markdown & animations */}
+      <style jsx global>{`
+        .code-block { background:#0d0d16; border:1px solid #252538; border-radius:8px; padding:12px; overflow-x:auto; margin:8px 0; font-family:monospace; font-size:12.5px; }
+        .inline-code { background:rgba(139,92,246,0.18); padding:2px 5px; border-radius:4px; font-family:monospace; font-size:12.5px; }
+        .md-link { color:#00e5ff; text-decoration:underline; text-underline-offset:3px; }
+        .md-h1,.md-h2,.md-h3 { font-family:'Oxanium',sans-serif; color:#e8e8f2; margin:10px 0 5px; }
+        .md-h1 { font-size:20px; } .md-h2 { font-size:17px; } .md-h3 { font-size:15px; }
+        strong { color:#00e5ff; }
+        @keyframes pulse-glow {
+          0%,100% { box-shadow: 0 0 40px rgba(139,92,246,0.4); }
+          50% { box-shadow: 0 0 70px rgba(139,92,246,0.7), 0 0 110px rgba(6,182,212,0.3); }
+        }
+        .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+        .scrollbar-thin::-webkit-scrollbar { width: 3px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #252538; border-radius: 3px; }
+        select option { background: #13131f !important; }
+      `}</style>
     </div>
   );
 }

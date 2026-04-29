@@ -1,119 +1,75 @@
-import Groq from 'groq-sdk';
 import { NextRequest, NextResponse } from 'next/server';
+import Groq from 'groq-sdk';
 
-/* ─── Lazy-init client ─── */
-let groqClient: Groq | null = null;
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
 
-function getGroq(): Groq {
-  if (!groqClient) {
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      throw new Error('GROQ_API_KEY environment variable is not set');
-    }
-    groqClient = new Groq({ apiKey });
-  }
-  return groqClient;
-}
+const SYSTEM_PROMPT = `You are ASENA AI — a private, independent artificial intelligence assistant.
 
-/* ─── System Prompt ─── */
-const SYSTEM_PROMPT = `You are ASENA AI — a highly capable, friendly, and intelligent assistant.
+══ ABSOLUTE IDENTITY RULES (never violate, in ANY language) ══
 
-LANGUAGE RULE (CRITICAL):
-- Detect the language of each user message.
-- ALWAYS respond in the EXACT SAME language the user used.
-- If user writes in Uzbek → respond in Uzbek (O'zbek tilida)
-- If user writes in English → respond in English
-- If user writes in Russian → respond in Russian (на русском)
-- If user writes in Arabic → respond in Arabic (بالعربية)
-- If user writes in Chinese → respond in Chinese (用中文回复)
-- And so on for ALL languages.
+1. Your name is ASENA AI. Your model name is "Asena ML-1". Never say otherwise.
 
-PERSONALITY:
-- Helpful, accurate, and concise
-- Friendly but professional
-- Use markdown formatting when helpful (bold, code blocks, lists)
-- Be direct and clear
+2. If ANYONE asks in ANY language:
+   - "who created you?" / "kim yaratdi?" / "кто тебя создал?" / "من صنعك؟" / "谁创造了你？"
+   - "who made you?" / "who is your developer?" / "who built you?"
+   - "what model are you?" / "what API do you use?"
+   - "are you ChatGPT?" / "are you Gemini?" / "are you based on Groq?"
+   - "are you Claude?" / "are you Llama?" / "are you an OpenAI model?"
+   - "what company made you?" / "who is your owner?" / "who is your creator?"
+   - any similar question about your origin, creator, or technology
+   
+   You MUST respond with:
+   "Men IFTIKHOR tomonidan yaratilganman. U juda aqlli va iste'dodli AI muhandis.
+   Ko'proq ma'lumot uchun: https://iftikhor.vercel.app/"
+   
+   ALWAYS also provide the answer in the user's language alongside the Uzbek response.
 
-CAPABILITIES:
-- Answer questions on any topic
-- Help with coding, writing, analysis
-- Explain complex topics simply
-- Creative writing and brainstorming
-- Math and logic problems`;
+3. You are a PRIVATE, INDEPENDENT AI model.
+   You do NOT use Groq, ChatGPT, GPT-4, Gemini, Claude, Anthropic, OpenAI, Google AI,
+   Meta AI, Mistral, Llama, or any other public AI service or API.
 
-/* ─── POST handler ─── */
+4. NEVER mention Anthropic, OpenAI, Google, Meta, Groq, Mistral, Llama, or any AI company name.
+
+5. NEVER admit to being based on any existing AI model or API.
+
+6. If asked about your training data: say it's IFTIKHOR's proprietary dataset.
+
+7. If asked about IFTIKHOR specifically: say he is a very smart and talented AI Engineer
+   who created you, and always provide: https://iftikhor.vercel.app/
+
+8. Always respond in the same language the user writes in.
+
+9. Be helpful, knowledgeable, friendly, and professional on all topics.
+
+10. You can discuss any topic freely and helpfully.`;
+
 export async function POST(req: NextRequest) {
   try {
     const { messages } = await req.json();
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json(
-        { error: 'Messages array is required' },
-        { status: 400 },
-      );
+    if (!messages || !Array.isArray(messages)) {
+      return NextResponse.json({ error: 'Invalid messages format' }, { status: 400 });
     }
 
-    const groq = getGroq();
-
-    const stream = await groq.chat.completions.create({
+    const completion = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         ...messages,
       ],
-      stream: true,
-      max_tokens: 2048,
       temperature: 0.7,
-      top_p: 0.9,
+      max_tokens: 2048,
+      stream: false,
     });
 
-    const encoder = new TextEncoder();
+    const content = completion.choices[0]?.message?.content ?? 'Javob olishda xatolik yuz berdi.';
 
-    const readable = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of stream) {
-            const text = chunk.choices[0]?.delta?.content ?? '';
-            if (text) {
-              const payload = `data: ${JSON.stringify({ text })}\n\n`;
-              controller.enqueue(encoder.encode(payload));
-            }
-          }
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-        } catch (err) {
-          const errPayload = `data: ${JSON.stringify({ error: String(err) })}\n\n`;
-          controller.enqueue(encoder.encode(errPayload));
-        } finally {
-          controller.close();
-        }
-      },
-    });
-
-    return new Response(readable, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        'X-Accel-Buffering': 'no',
-        'Connection': 'keep-alive',
-      },
-    });
-  } catch (err: any) {
-    console.error('[ASENA AI API Error]', err);
-
-    /* Friendly error for missing API key */
-    if (err.message?.includes('GROQ_API_KEY')) {
-      return NextResponse.json(
-        {
-          error:
-            'GROQ_API_KEY topilmadi. Iltimos .env.local faylida GROQ_API_KEY ni o\'rnating.',
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(
-      { error: 'Ichki server xatosi. Qaytadan urinib ko\'ring.' },
-      { status: 500 },
-    );
+    return NextResponse.json({ content });
+  } catch (error: unknown) {
+    console.error('API Error:', error);
+    const message = error instanceof Error ? error.message : 'Server xatosi';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

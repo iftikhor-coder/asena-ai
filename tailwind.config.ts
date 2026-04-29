@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
@@ -9,30 +9,36 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        syne: ['var(--font-syne)', 'sans-serif'],
-        jakarta: ['var(--font-jakarta)', 'sans-serif'],
+        sans: ['var(--font-dm-sans)', 'DM Sans', 'sans-serif'],
+        oxanium: ['var(--font-oxanium)', 'Oxanium', 'sans-serif'],
+      },
+      colors: {
+        dark: '#09090f',
+        sidebar: '#0d0d16',
+        card: '#13131f',
+        input: '#18182a',
+        border: '#252538',
+        'text-primary': '#e8e8f2',
+        'text-secondary': '#7777a0',
+        cyan: '#00e5ff',
+        purple: '#8b5cf6',
+        green: '#22c55e',
+      },
+      backgroundImage: {
+        'gradient-main': 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
       },
       animation: {
-        'cursor-blink': 'blink 1s step-end infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
       },
       keyframes: {
-        blink: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-8px)' },
-        },
-        'glow-pulse': {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(124, 109, 248, 0.15)' },
-          '50%': { boxShadow: '0 0 40px rgba(124, 109, 248, 0.35)' },
+        'pulse-glow': {
+          '0%, 100%': { boxShadow: '0 0 40px rgba(139,92,246,0.4)' },
+          '50%': { boxShadow: '0 0 70px rgba(139,92,246,0.7), 0 0 110px rgba(6,182,212,0.3)' },
         },
       },
     },
   },
   plugins: [],
-}
-export default config
+};
+
+export default config;
