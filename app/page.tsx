@@ -362,7 +362,7 @@ function mdToHtml(t:string){
 }
 
 export default function Home() {
-  const [lang, setLang] = useState('uz');
+  const [lang, setLang] = useState('en');
   const [convs, setConvs] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string|null>(null);
   const [input, setInput] = useState('');
@@ -497,7 +497,12 @@ export default function Home() {
                 <span>{s.ultra}</span>
               </div>
               <div className="grid grid-cols-2 gap-2.5 max-w-[680px] w-full mt-2">
-                {s.sugg.map((sg,i)=>(
+                {[
+                  {lang:"O'zbek", txt:"Sun'iy intellekt kelajagi haqida gapir"},
+                  {lang:"English", txt:"Explain quantum computing simply"},
+                  {lang:"Türkçe", txt:"Yapay zekanın geleceği hakkında konuş"},
+                  {lang:"Azərbaycan", txt:"Süni intellekt haqqında danış"},
+                ].map((sg,i)=>(
                   <div key={i} onClick={()=>sendMsg(sg.txt)} className="bg-[#13131f] border border-[#252538] rounded-xl p-3.5 cursor-pointer hover:border-[#8b5cf6] hover:bg-[#18182a] hover:-translate-y-0.5 transition-all hover:shadow-[0_8px_24px_rgba(139,92,246,0.15)]">
                     <p className="text-[11px] text-[#7777a0] mb-1">{sg.lang}</p>
                     <p className="text-[13.5px] font-medium leading-snug">{sg.txt}</p>
