@@ -422,11 +422,8 @@ export default function Home() {
       {/* SIDEBAR */}
       <aside className={`flex flex-col border-r border-[#252538] bg-[#0d0d16] transition-all duration-300 overflow-hidden ${sidebarOpen?'w-[262px] min-w-[262px] px-[10px] py-[14px]':'w-0 min-w-0 p-0'}`}>
         <div className="flex items-center gap-3 pb-4 border-b border-[#252538] mb-3">
-          <div className="w-9 h-9 min-w-[36px] rounded-[10px] bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center shadow-[0_0_24px_rgba(139,92,246,0.4)]">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L14.8 9.2H22.5L16.3 13.8L18.6 21L12 16.4L5.4 21L7.7 13.8L1.5 9.2H9.2L12 2Z" fill="white" opacity="0.95"/>
-              <circle cx="12" cy="11.5" r="2.5" fill="rgba(255,255,255,0.55)"/>
-            </svg>
+          <div className="w-9 h-9 min-w-[36px] rounded-[10px] overflow-hidden shadow-[0_0_24px_rgba(139,92,246,0.4)]">
+            <img src="/asena-ai-logo.svg" alt="ASENA AI" width="36" height="36" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
           </div>
           <div>
             <h1 style={{fontFamily:'var(--font-oxanium,Oxanium,sans-serif)'}} className="text-[14px] font-extrabold tracking-[1.5px]">ASENA AI</h1>
@@ -490,8 +487,8 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto flex flex-col">
           {!activeId ? (
             <div className="flex-1 flex flex-col items-center justify-center px-5 py-10 gap-4">
-              <div className="w-[82px] h-[82px] rounded-[22px] bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.45)]" style={{animation:'pglow 3s ease-in-out infinite'}}>
-                <StarBig/>
+              <div className="w-[82px] h-[82px] rounded-[22px] overflow-hidden shadow-[0_0_50px_rgba(139,92,246,0.45)]" style={{animation:'zoomPulse 3s ease-in-out infinite'}}>
+                <img src="/asena-ai-logo.svg" alt="ASENA AI" width="82" height="82" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
               </div>
               <h2 style={{fontFamily:'var(--font-oxanium,Oxanium,sans-serif)',background:'linear-gradient(135deg,#8b5cf6,#06b6d4)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}} className="text-[44px] font-extrabold tracking-[3px]">ASENA AI</h2>
               <p className="text-center text-[#7777a0] text-[15px] max-w-[500px] leading-relaxed">{s.sub}</p>
@@ -556,6 +553,10 @@ export default function Home() {
         @keyframes pglow {
           0%,100%{box-shadow:0 0 40px rgba(139,92,246,0.4);}
           50%{box-shadow:0 0 70px rgba(139,92,246,0.7),0 0 110px rgba(6,182,212,0.3);}
+        }
+        @keyframes zoomPulse {
+          0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(139,92,246,0.5);}
+          50%{transform:scale(1.08);box-shadow:0 0 70px rgba(139,92,246,0.8),0 0 110px rgba(6,182,212,0.4);}
         }
         .codeblock{background:#0d0d16;border:1px solid #252538;border-radius:8px;padding:12px;overflow-x:auto;margin:8px 0;font-family:monospace;font-size:12.5px;}
         .ic{background:rgba(139,92,246,0.18);padding:2px 5px;border-radius:4px;font-family:monospace;font-size:12.5px;}
