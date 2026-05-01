@@ -210,63 +210,93 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-[#09090f] text-[#e8e8f2] overflow-hidden" dir={isRTL?'rtl':'ltr'}>
 
-      {/* OVERLAY - mobilda tashqariga bosganda yopiladi */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 z-20" onClick={()=>setSidebarOpen(false)}/>
-      )}
-
-      {/* SIDEBAR - overlay ustida, slayd animatsiya */}
-      <aside className={`fixed top-0 left-0 h-full z-30 flex flex-col bg-[#0d0d16] border-r border-[#252538] transition-transform duration-300 ease-in-out w-[262px] px-[10px] py-[14px] ${sidebarOpen?'translate-x-0':'-translate-x-full'}`}>
-
-        {/* Logo */}
-        <div className="flex items-center gap-3 pb-4 border-b border-[#252538] mb-3">
-          <div className="w-9 h-9 min-w-[36px] rounded-[10px] overflow-hidden shadow-[0_0_24px_rgba(139,92,246,0.4)]">
-            <img src="/asena-ai-logo.svg" alt="ASENA AI" width="36" height="36" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+      {/* ── SIDEBAR: yopiq=52px (faqat logo), ochiq=262px (to'liq) ── */}
+      <aside
+        style={{width: sidebarOpen ? '262px' : '52px', minWidth: sidebarOpen ? '262px' : '52px', transition:'width 0.3s ease, min-width 0.3s ease'}}
+        className="flex flex-col bg-[#0d0d16] border-r border-[#252538] overflow-hidden flex-shrink-0"
+      >
+        {/* Logo row */}
+        <div className="flex items-center border-b border-[#252538] px-[10px] py-[14px] gap-3" style={{minHeight:'60px'}}>
+          {/* Logo - har doim ko'rinadi */}
+          <div
+            className="w-8 h-8 min-w-[32px] rounded-[8px] overflow-hidden shadow-[0_0_16px_rgba(139,92,246,0.4)] cursor-pointer flex-shrink-0"
+            onClick={()=>setSidebarOpen(v=>!v)}
+          >
+            <img src="/asena-ai-logo.svg" alt="ASENA AI" width="32" height="32" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
           </div>
-          <div>
-            <h1 style={{fontFamily:'var(--font-oxanium,Oxanium,sans-serif)'}} className="text-[14px] font-extrabold tracking-[1.5px]">ASENA AI</h1>
-            <p className="text-[9px] text-[#00e5ff] tracking-[1.5px] font-semibold mt-0.5 whitespace-nowrap overflow-hidden" style={{maxWidth:'160px'}}>{s.powered}</p>
-          </div>
+          {/* Matn faqat ochiq holatda */}
+          {sidebarOpen && (
+            <div className="overflow-hidden">
+              <h1 style={{fontFamily:'var(--font-oxanium,Oxanium,sans-serif)'}} className="text-[13px] font-extrabold tracking-[1.5px] whitespace-nowrap">ASENA AI</h1>
+              <p className="text-[8px] text-[#00e5ff] tracking-[1.5px] font-semibold mt-0.5 whitespace-nowrap">{s.powered}</p>
+            </div>
+          )}
         </div>
 
         {/* New Chat */}
-        <button onClick={()=>{newChat();setSidebarOpen(false);}} className="flex items-center justify-between bg-[#13131f] border border-[#252538] rounded-[10px] px-3 py-2 text-[13px] cursor-pointer mb-4 hover:border-[#8b5cf6] hover:bg-[#18182a] transition-all">
-          <div className="flex items-center gap-2">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span>{s.nc}</span>
-          </div>
-          <span className="bg-[#18182a] border border-[#252538] rounded px-1 py-0.5 text-[10px] text-[#7777a0]">Ctrl N</span>
-        </button>
-
-        <p className="text-[10px] font-semibold tracking-[1.5px] text-[#7777a0] px-1 pb-2">{s.convs}</p>
-
-        {/* Chat list */}
-        <div className="flex-1 overflow-y-auto flex flex-col gap-0.5">
-          {convs.length===0?(
-            <div className="flex flex-col items-center gap-2 py-7 text-[#7777a0] text-[12px] opacity-60">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <span>{s.noc}</span>
-            </div>
-          ):convs.map(c=>(
-            <div key={c.id} onClick={()=>{setActiveId(c.id);setSidebarOpen(false);}} className={`px-2.5 py-2 rounded-lg cursor-pointer text-[12.5px] truncate transition-all ${activeId===c.id?'bg-[#13131f] text-[#e8e8f2]':'text-[#7777a0] hover:bg-[#13131f] hover:text-[#e8e8f2]'}`}>{c.title}</div>
-          ))}
+        <div className="px-[10px] pt-3 pb-2">
+          {sidebarOpen ? (
+            <button onClick={()=>{newChat();}} className="flex items-center justify-between w-full bg-[#13131f] border border-[#252538] rounded-[10px] px-3 py-2 text-[13px] cursor-pointer hover:border-[#8b5cf6] hover:bg-[#18182a] transition-all">
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>{s.nc}</span>
+              </div>
+              <span className="bg-[#18182a] border border-[#252538] rounded px-1 py-0.5 text-[10px] text-[#7777a0]">Ctrl N</span>
+            </button>
+          ) : (
+            <button onClick={()=>newChat()} title="New Chat" className="w-8 h-8 flex items-center justify-center rounded-lg text-[#7777a0] hover:text-[#e8e8f2] hover:bg-[#13131f] transition-all mx-auto">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          )}
         </div>
 
+        {/* Conversations - faqat ochiq holatda */}
+        {sidebarOpen && (
+          <>
+            <p className="text-[10px] font-semibold tracking-[1.5px] text-[#7777a0] px-[14px] pb-2">{s.convs}</p>
+            <div className="flex-1 overflow-y-auto flex flex-col gap-0.5 px-[10px]">
+              {convs.length===0?(
+                <div className="flex flex-col items-center gap-2 py-7 text-[#7777a0] text-[12px] opacity-60">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>{s.noc}</span>
+                </div>
+              ):convs.map(c=>(
+                <div key={c.id} onClick={()=>setActiveId(c.id)} className={`px-2.5 py-2 rounded-lg cursor-pointer text-[12.5px] truncate transition-all ${activeId===c.id?'bg-[#13131f] text-[#e8e8f2]':'text-[#7777a0] hover:bg-[#13131f] hover:text-[#e8e8f2]'}`}>{c.title}</div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Yopiq holatda spacer */}
+        {!sidebarOpen && <div className="flex-1"/>}
+
         {/* Footer */}
-        <div className="border-t border-[#252538] pt-3 flex flex-col gap-2">
-          <div className="flex items-center gap-2 px-2 py-1.5 bg-[#13131f] rounded-lg text-[12px] text-[#7777a0]">
-            <span className="w-[7px] h-[7px] min-w-[7px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]"/>
-            <span>Asena-1.0 ML</span>
-          </div>
-          <div className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-[#13131f] transition-colors cursor-pointer">
-            <div className="w-8 h-8 min-w-[32px] rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center text-[13px] font-bold">U</div>
-            <div><p className="text-[12.5px] font-medium">{s.guest}</p><p className="text-[11px] text-[#7777a0]">{s.gsub}</p></div>
-          </div>
+        <div className="border-t border-[#252538] px-[10px] pt-3 pb-3 flex flex-col gap-2">
+          {sidebarOpen ? (
+            <>
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-[#13131f] rounded-lg text-[12px] text-[#7777a0]">
+                <span className="w-[7px] h-[7px] min-w-[7px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]"/>
+                <span className="whitespace-nowrap">Asena-1.0 ML</span>
+              </div>
+              <div className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-[#13131f] transition-colors cursor-pointer">
+                <div className="w-8 h-8 min-w-[32px] rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center text-[13px] font-bold flex-shrink-0">U</div>
+                <div className="overflow-hidden">
+                  <p className="text-[12.5px] font-medium whitespace-nowrap">{s.guest}</p>
+                  <p className="text-[11px] text-[#7777a0] whitespace-nowrap">{s.gsub}</p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <span className="w-[7px] h-[7px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]"/>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center text-[13px] font-bold cursor-pointer">U</div>
+            </div>
+          )}
         </div>
       </aside>
 
-      {/* MAIN - sidebar fixed bo'lgani uchun main to'liq kenglikda */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0 w-full">
+      {/* ── MAIN ── */}
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* Topbar */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#252538] bg-[#09090f] flex-shrink-0">
