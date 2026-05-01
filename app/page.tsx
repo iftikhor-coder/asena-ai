@@ -139,19 +139,70 @@ function getT(code:string):UIStr {
 interface Message { id:string; role:'user'|'assistant'; content:string; }
 interface Conversation { id:string; title:string; messages:Message[]; }
 
-function mdToHtml(t:string){
-  return t
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/```[\w]*\n?([\s\S]*?)```/g,'<pre class="codeblock"><code>$1</code></pre>')
-    .replace(/`([^`\n]+)`/g,'<code class="ic">$1</code>')
+function mdToHtml(raw:string){
+  let t = raw
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // Code blocks
+  t = t.replace(/```([\w]*)\n?([\s\S]*?)```/g,(_,lang,code)=>
+    `<pre class="codeblock"><div class="codeblock-lang">${lang||'code'}</div><code>${code.trim()}</code></pre>`
+  );
+  // Inline code
+  t = t.replace(/`([^`\n]+)`/g,'<code class="ic">$1</code>');
+
+  // Process line by line
+  const lines = t.split('\n');
+  const out: string[] = [];
+  let inList = false;
+  let listType = '';
+
+  for(let i=0;i<lines.length;i++){
+    const line = lines[i];
+
+    // Headings
+    if(/^### (.+)/.test(line)){ if(inList){out.push(listType==='ul'?'</ul>':'</ol>');inList=false;} out.push(`<h3 class="mh3">${line.replace(/^### /,'')}</h3>`); continue; }
+    if(/^## (.+)/.test(line)){ if(inList){out.push(listType==='ul'?'</ul>':'</ol>');inList=false;} out.push(`<h2 class="mh2">${line.replace(/^## /,'')}</h2>`); continue; }
+    if(/^# (.+)/.test(line)){ if(inList){out.push(listType==='ul'?'</ul>':'</ol>');inList=false;} out.push(`<h1 class="mh1">${line.replace(/^# /,'')}</h1>`); continue; }
+
+    // Horizontal rule
+    if(/^---+$/.test(line.trim())){ if(inList){out.push(listType==='ul'?'</ul>':'</ol>');inList=false;} out.push('<hr class="mhr"/>'); continue; }
+
+    // Ordered list
+    const olMatch = line.match(/^(\d+)\. (.+)/);
+    if(olMatch){
+      if(!inList||listType!=='ol'){if(inList)out.push('</ul>');out.push('<ol class="mol">');inList=true;listType='ol';}
+      out.push(`<li>${olMatch[2]}</li>`); continue;
+    }
+
+    // Unordered list
+    const ulMatch = line.match(/^[\-\*•] (.+)/);
+    if(ulMatch){
+      if(!inList||listType!=='ul'){if(inList)out.push('</ol>');out.push('<ul class="mul">');inList=true;listType='ul';}
+      out.push(`<li>${ulMatch[1]}</li>`); continue;
+    }
+
+    // Close list
+    if(inList && line.trim()===''){out.push(listType==='ul'?'</ul>':'</ol>');inList=false;out.push('<div class="mpara-gap"></div>');continue;}
+    if(inList){out.push(listType==='ul'?'</ul>':'</ol>');inList=false;}
+
+    // Empty line = paragraph gap
+    if(line.trim()===''){out.push('<div class="mpara-gap"></div>');continue;}
+
+    // Normal line
+    out.push(`<p class="mpara">${line}</p>`);
+  }
+  if(inList) out.push(listType==='ul'?'</ul>':'</ol>');
+
+  let result = out.join('');
+
+  // Inline formatting
+  result = result
     .replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/^### (.+)/gm,'<h3 class="mh3">$1</h3>')
-    .replace(/^## (.+)/gm,'<h2 class="mh2">$1</h2>')
-    .replace(/^# (.+)/gm,'<h1 class="mh1">$1</h1>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a href="$2" target="_blank" class="ml">$1</a>')
-    .replace(/\n/g,'<br/>');
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a href="$2" target="_blank" class="ml">$1</a>');
+
+  return result;
 }
 
 export default function Home() {
@@ -404,15 +455,47 @@ export default function Home() {
           0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(139,92,246,0.5);}
           50%{transform:scale(1.08);box-shadow:0 0 70px rgba(139,92,246,0.8),0 0 110px rgba(6,182,212,0.4);}
         }
-        .codeblock{background:#0d0d16;border:1px solid #252538;border-radius:8px;padding:12px;overflow-x:auto;margin:8px 0;font-family:monospace;font-size:12.5px;}
-        .ic{background:rgba(139,92,246,0.18);padding:2px 5px;border-radius:4px;font-family:monospace;font-size:12.5px;}
-        .ml{color:#00e5ff;text-decoration:underline;text-underline-offset:3px;}
-        .mh1,.mh2,.mh3{color:#e8e8f2;margin:10px 0 5px;}
-        .mh1{font-size:20px;}.mh2{font-size:17px;}.mh3{font-size:15px;}
-        strong{color:#00e5ff;}
-        select option{background:#13131f!important;color:#e8e8f2!important;}
+
+        /* ── MESSAGE BODY ── */
+        .mpara{ margin:0; padding:0; line-height:1.8; font-size:14px; color:#e8e8f2; }
+        .mpara-gap{ height:10px; }
+
+        /* ── HEADINGS ── */
+        .mh1{ font-size:20px; font-weight:700; color:#00e5ff; margin:16px 0 8px; padding-bottom:6px; border-bottom:1px solid #252538; line-height:1.3; }
+        .mh2{ font-size:17px; font-weight:700; color:#00e5ff; margin:14px 0 7px; line-height:1.3; }
+        .mh3{ font-size:15px; font-weight:600; color:#a78bfa; margin:12px 0 6px; line-height:1.3; }
+
+        /* ── LISTS ── */
+        .mul, .mol{ margin:8px 0 8px 4px; padding-left:20px; display:flex; flex-direction:column; gap:5px; }
+        .mul{ list-style:none; padding-left:4px; }
+        .mol{ list-style:none; counter-reset:oli; padding-left:4px; }
+        .mul li{ position:relative; padding-left:20px; font-size:14px; line-height:1.75; color:#e8e8f2; }
+        .mul li::before{ content:''; position:absolute; left:4px; top:10px; width:6px; height:6px; background:#8b5cf6; border-radius:50%; }
+        .mol li{ position:relative; padding-left:28px; font-size:14px; line-height:1.75; color:#e8e8f2; counter-increment:oli; }
+        .mol li::before{ content:counter(oli)'.'; position:absolute; left:0; top:0; color:#00e5ff; font-weight:700; font-size:13px; min-width:22px; }
+
+        /* ── INLINE ── */
+        strong{ color:#00e5ff; font-weight:700; }
+        em{ color:rgba(232,232,242,0.85); font-style:italic; }
+
+        /* ── CODE ── */
+        .codeblock{ background:#0a0a14; border:1px solid #252538; border-radius:10px; overflow:hidden; margin:10px 0; }
+        .codeblock-lang{ background:#13131f; color:#7777a0; font-size:11px; padding:5px 12px; letter-spacing:0.5px; border-bottom:1px solid #252538; }
+        .codeblock code{ display:block; padding:12px; overflow-x:auto; font-family:monospace; font-size:12.5px; color:#e8e8f2; line-height:1.6; white-space:pre; }
+        .ic{ background:rgba(139,92,246,0.18); border:1px solid rgba(139,92,246,0.25); padding:1px 6px; border-radius:4px; font-family:monospace; font-size:12.5px; color:#c4b5fd; }
+
+        /* ── LINK ── */
+        .ml{ color:#00e5ff; text-decoration:underline; text-underline-offset:3px; font-weight:500; }
+        .ml:hover{ opacity:0.8; }
+
+        /* ── HR ── */
+        .mhr{ border:none; border-top:1px solid #252538; margin:12px 0; }
+
+        /* ── SCROLLBAR ── */
         ::-webkit-scrollbar{width:3px;height:3px;}
         ::-webkit-scrollbar-thumb{background:#252538;border-radius:3px;}
+
+        select option{background:#13131f!important;color:#e8e8f2!important;}
       `}</style>
     </div>
   );
