@@ -334,18 +334,6 @@ function getT(code:string):UIStr {
 interface Message { id:string; role:'user'|'assistant'; content:string; }
 interface Conversation { id:string; title:string; messages:Message[]; }
 
-const StarBig = () => (
-  <svg width="46" height="46" viewBox="0 0 24 24" fill="none">
-    <path d="M12 2L14.8 9.2H22.5L16.3 13.8L18.6 21L12 16.4L5.4 21L7.7 13.8L1.5 9.2H9.2L12 2Z" fill="white" opacity="0.95"/>
-    <circle cx="12" cy="11.5" r="2.8" fill="rgba(255,255,255,0.6)"/>
-  </svg>
-);
-const StarSm = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path d="M12 2L14.8 9.2H22.5L16.3 13.8L18.6 21L12 16.4L5.4 21L7.7 13.8L1.5 9.2H9.2L12 2Z" fill="white" opacity="0.9"/>
-  </svg>
-);
-
 function mdToHtml(t:string){
   return t
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -367,7 +355,8 @@ export default function Home() {
   const [activeId, setActiveId] = useState<string|null>(null);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // ── Sidebar default YOPIQ ──
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
@@ -385,7 +374,6 @@ export default function Home() {
   },[]);
 
   const newChat = useCallback(()=>{ setActiveId(null); setInput(''); if(taRef.current)taRef.current.style.height='auto'; },[]);
-
   const autoResize = ()=>{ const t=taRef.current; if(!t)return; t.style.height='auto'; t.style.height=Math.min(t.scrollHeight,150)+'px'; };
 
   const sendMsg = async (override?:string)=>{
@@ -419,8 +407,28 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-[#09090f] text-[#e8e8f2] overflow-hidden" dir={isRTL?'rtl':'ltr'}>
 
-      {/* SIDEBAR */}
-      <aside className={`flex flex-col border-r border-[#252538] bg-[#0d0d16] transition-all duration-300 overflow-hidden ${sidebarOpen?'w-[262px] min-w-[262px] px-[10px] py-[14px]':'w-0 min-w-0 p-0'}`}>
+      {/* ── OVERLAY — mobilda sidebar ochilganda orqani qoraytiradi ── */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-20 md:hidden"
+          onClick={()=>setSidebarOpen(false)}
+        />
+      )}
+
+      {/* ── SIDEBAR — slayd animatsiya ── */}
+      <aside
+        className={`
+          fixed top-0 left-0 h-full z-30
+          flex flex-col border-r border-[#252538] bg-[#0d0d16]
+          transition-transform duration-300 ease-in-out
+          w-[262px]
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:relative md:z-auto
+          ${sidebarOpen ? 'md:translate-x-0' : 'md:-translate-x-full md:w-0'}
+          px-[10px] py-[14px]
+        `}
+      >
+        {/* Logo */}
         <div className="flex items-center gap-3 pb-4 border-b border-[#252538] mb-3">
           <div className="w-9 h-9 min-w-[36px] rounded-[10px] overflow-hidden shadow-[0_0_24px_rgba(139,92,246,0.4)]">
             <img src="/asena-ai-logo.svg" alt="ASENA AI" width="36" height="36" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
@@ -430,6 +438,8 @@ export default function Home() {
             <p className="text-[9px] text-[#00e5ff] tracking-[1.5px] font-semibold mt-0.5 whitespace-nowrap overflow-hidden" style={{maxWidth:'160px'}}>{s.powered}</p>
           </div>
         </div>
+
+        {/* New Chat */}
         <button onClick={newChat} className="flex items-center justify-between bg-[#13131f] border border-[#252538] rounded-[10px] px-3 py-2 text-[13px] cursor-pointer mb-4 hover:border-[#8b5cf6] hover:bg-[#18182a] transition-all">
           <div className="flex items-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -437,7 +447,10 @@ export default function Home() {
           </div>
           <span className="bg-[#18182a] border border-[#252538] rounded px-1 py-0.5 text-[10px] text-[#7777a0]">Ctrl N</span>
         </button>
+
         <p className="text-[10px] font-semibold tracking-[1.5px] text-[#7777a0] px-1 pb-2">{s.convs}</p>
+
+        {/* Chat list */}
         <div className="flex-1 overflow-y-auto flex flex-col gap-0.5">
           {convs.length===0?(
             <div className="flex flex-col items-center gap-2 py-7 text-[#7777a0] text-[12px] opacity-60">
@@ -445,9 +458,11 @@ export default function Home() {
               <span>{s.noc}</span>
             </div>
           ):convs.map(c=>(
-            <div key={c.id} onClick={()=>setActiveId(c.id)} className={`px-2.5 py-2 rounded-lg cursor-pointer text-[12.5px] truncate transition-all ${activeId===c.id?'bg-[#13131f] text-[#e8e8f2]':'text-[#7777a0] hover:bg-[#13131f] hover:text-[#e8e8f2]'}`}>{c.title}</div>
+            <div key={c.id} onClick={()=>{setActiveId(c.id);setSidebarOpen(false);}} className={`px-2.5 py-2 rounded-lg cursor-pointer text-[12.5px] truncate transition-all ${activeId===c.id?'bg-[#13131f] text-[#e8e8f2]':'text-[#7777a0] hover:bg-[#13131f] hover:text-[#e8e8f2]'}`}>{c.title}</div>
           ))}
         </div>
+
+        {/* Footer */}
         <div className="border-t border-[#252538] pt-3 flex flex-col gap-2">
           <div className="flex items-center gap-2 px-2 py-1.5 bg-[#13131f] rounded-lg text-[12px] text-[#7777a0]">
             <span className="w-[7px] h-[7px] min-w-[7px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]"/>
@@ -460,13 +475,22 @@ export default function Home() {
         </div>
       </aside>
 
-      {/* MAIN */}
+      {/* ── MAIN ── */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+
         {/* Topbar */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#252538] bg-[#09090f] flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            <button onClick={()=>setSidebarOpen(v=>!v)} className="p-1.5 rounded-lg text-[#7777a0] hover:text-[#e8e8f2] hover:bg-[#13131f] transition-all">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            {/* Hamburger — bosganda slayd ochiladi/yopiladi */}
+            <button
+              onClick={()=>setSidebarOpen(v=>!v)}
+              className="p-1.5 rounded-lg text-[#7777a0] hover:text-[#e8e8f2] hover:bg-[#13131f] transition-all"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
             </button>
             <div className="flex items-center gap-2 text-[13px] text-[#7777a0]">
               <span className="w-[7px] h-[7px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]"/>
@@ -487,7 +511,8 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto flex flex-col">
           {!activeId ? (
             <div className="flex-1 flex flex-col items-center justify-center px-5 py-10 gap-4">
-              <div className="w-[82px] h-[82px] rounded-[22px] overflow-hidden shadow-[0_0_50px_rgba(139,92,246,0.45)]" style={{animation:'zoomPulse 3s ease-in-out infinite'}}>
+              {/* Markazdagi logo — zoom-pulse animatsiya */}
+              <div className="w-[82px] h-[82px] rounded-[22px] overflow-hidden" style={{animation:'zoomPulse 3s ease-in-out infinite',boxShadow:'0 0 50px rgba(139,92,246,0.45)'}}>
                 <img src="/asena-ai-logo.svg" alt="ASENA AI" width="82" height="82" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
               </div>
               <h2 style={{fontFamily:'var(--font-oxanium,Oxanium,sans-serif)',background:'linear-gradient(135deg,#8b5cf6,#06b6d4)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}} className="text-[44px] font-extrabold tracking-[3px]">ASENA AI</h2>
@@ -514,15 +539,23 @@ export default function Home() {
             <div className="flex flex-col gap-3.5 p-5 flex-1">
               {activeConv?.messages.map(msg=>(
                 <div key={msg.id} className={`flex gap-2.5 max-w-[800px] w-full mx-auto ${msg.role==='user'?'flex-row-reverse':''}`}>
-                  <div className={`w-[30px] h-[30px] min-w-[30px] rounded-lg flex items-center justify-center font-bold text-[13px] flex-shrink-0 ${msg.role==='assistant'?'bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4]':'bg-[#252538] text-[#7777a0]'}`}>
-                    {msg.role==='assistant'?<StarSm/>:'U'}
+                  {/* Avatar — AI uchun SVG logo, user uchun U */}
+                  <div className={`w-[30px] h-[30px] min-w-[30px] rounded-lg flex-shrink-0 overflow-hidden ${msg.role==='user'?'bg-[#252538] flex items-center justify-center text-[#7777a0] font-bold text-[13px]':''}`}>
+                    {msg.role==='assistant'
+                      ? <img src="/asena-ai-logo.svg" alt="ASENA AI" width="30" height="30" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'8px'}}/>
+                      : 'U'
+                    }
                   </div>
                   <div className={`rounded-xl px-4 py-3 text-[13.5px] leading-[1.75] max-w-[calc(100%-46px)] break-words border ${msg.role==='user'?'bg-[rgba(139,92,246,0.12)] border-[rgba(139,92,246,0.28)]':'bg-[#13131f] border-[#252538]'}`} dangerouslySetInnerHTML={{__html:mdToHtml(msg.content)}}/>
                 </div>
               ))}
+
+              {/* Typing dots */}
               {loading&&(
                 <div className="flex gap-2.5 max-w-[800px] w-full mx-auto">
-                  <div className="w-[30px] h-[30px] min-w-[30px] rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#06b6d4] flex items-center justify-center flex-shrink-0"><StarSm/></div>
+                  <div className="w-[30px] h-[30px] min-w-[30px] rounded-lg overflow-hidden flex-shrink-0">
+                    <img src="/asena-ai-logo.svg" alt="ASENA AI" width="30" height="30" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'8px'}}/>
+                  </div>
                   <div className="bg-[#13131f] border border-[#252538] rounded-xl px-4 py-3">
                     <div className="flex gap-1">
                       {[0,1,2].map(i=><span key={i} className="w-1.5 h-1.5 bg-[#8b5cf6] rounded-full animate-bounce" style={{animationDelay:`${i*0.22}s`}}/>)}
@@ -555,10 +588,6 @@ export default function Home() {
       </div>
 
       <style jsx global>{`
-        @keyframes pglow {
-          0%,100%{box-shadow:0 0 40px rgba(139,92,246,0.4);}
-          50%{box-shadow:0 0 70px rgba(139,92,246,0.7),0 0 110px rgba(6,182,212,0.3);}
-        }
         @keyframes zoomPulse {
           0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(139,92,246,0.5);}
           50%{transform:scale(1.08);box-shadow:0 0 70px rgba(139,92,246,0.8),0 0 110px rgba(6,182,212,0.4);}
