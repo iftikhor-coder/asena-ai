@@ -113,216 +113,21 @@ type UIStr = {
 };
 
 const T:Record<string,UIStr> = {
-  uz:{
-    powered:'ASENA-1.0 ML TOMONIDAN', nc:"Yangi suhbat", convs:'SUHBATLAR',
-    noc:"Hali suhbat yo'q", guest:'Mehmon foydalanuvchi', gsub:'Kirish uchun bosqich 2',
-    sub:"Aqlli yordamchingiz. Har qanday tilda savol bering — yordam berishga tayyorman.",
-    ultra:'Ultra-tez Asena-1.0 ML',
-    ph:"Xabar yozing... (Shift+Enter = yangi qator)",
-    hint:"ASENA AI · O'zbek · English · Türkçe · Azərbaycan · va boshqalar",
-    sugg:[
-      {lang:"O'zbek", txt:"Sun'iy intellekt kelajagi haqida gapir"},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:'Türkçe', txt:'Yapay zekanın geleceği hakkında konuş'},
-      {lang:'Azərbaycan', txt:'Süni intellekt haqqında danış'},
-    ],
-  },
-  en:{
-    powered:'POWERED BY ASENA-1.0 ML', nc:'New Chat', convs:'CONVERSATIONS',
-    noc:'No conversations yet', guest:'Guest User', gsub:'Step 2 to sign in',
-    sub:"Your intelligent assistant. Ask in any language — ready to help you.",
-    ultra:'Ultra-fast Asena-1.0 ML',
-    ph:'Type a message... (Shift+Enter = new line)',
-    hint:"ASENA AI · English · O'zbek · Türkçe · Azərbaycan · and more",
-    sugg:[
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:'English', txt:'Write me a poem about space'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  tr:{
-    powered:'ASENA-1.0 ML TARAFINDAN', nc:'Yeni Sohbet', convs:'SOHBETLER',
-    noc:'Henüz sohbet yok', guest:'Misafir Kullanıcı', gsub:'Giriş için adım 2',
-    sub:'Akıllı asistanınız. Herhangi bir dilde soru sorun — yardım etmeye hazırım.',
-    ultra:'Ultra hızlı Asena-1.0 ML',
-    ph:'Mesaj yazın... (Shift+Enter = yeni satır)',
-    hint:"ASENA AI · Türkçe · English · O'zbek · Azərbaycan · ve daha fazlası",
-    sugg:[
-      {lang:'Türkçe', txt:'Yapay zekanın geleceği hakkında konuş'},
-      {lang:'Türkçe', txt:'Kuantum bilgisayarı basitçe açıkla'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-    ],
-  },
-  az:{
-    powered:'ASENA-1.0 ML TƏRƏFİNDƏN', nc:'Yeni Söhbət', convs:'SÖHBƏTLƏRİM',
-    noc:'Hələ söhbət yoxdur', guest:'Qonaq İstifadəçi', gsub:'Daxil olmaq üçün addım 2',
-    sub:'Ağıllı köməkçiniz. İstənilən dildə sual verin — kömək etməyə hazıram.',
-    ultra:'Ultra-sürətli Asena-1.0 ML',
-    ph:'Mesaj yazın... (Shift+Enter = yeni sətir)',
-    hint:"ASENA AI · Azərbaycan · O'zbek · English · Türkçe · və daha çox",
-    sugg:[
-      {lang:'Azərbaycan', txt:'Süni intellekt haqqında danış'},
-      {lang:'Azərbaycan', txt:'Kvant hesablamasını izah et'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-    ],
-  },
-  ar:{
-    powered:'مدعوم بـ ASENA-1.0 ML', nc:'محادثة جديدة', convs:'المحادثات',
-    noc:'لا توجد محادثات بعد', guest:'ضيف', gsub:'الخطوة 2 لتسجيل الدخول',
-    sub:'مساعدك الذكي. اسأل بأي لغة — أنا هنا للمساعدة.',
-    ultra:'استنتاج Asena-1.0 ML فائق السرعة',
-    ph:'اكتب رسالة... (Shift+Enter = سطر جديد)',
-    hint:"ASENA AI · العربية · English · Türkçe · O'zbek · والمزيد",
-    sugg:[
-      {lang:'العربية', txt:'اشرح لي الذكاء الاصطناعي'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  'zh-CN':{
-    powered:'由 ASENA-1.0 ML 驱动', nc:'新对话', convs:'对话',
-    noc:'暂无对话', guest:'访客用户', gsub:'登录第2步',
-    sub:'您的智能助手。用任何语言提问 — 随时准备帮助您。',
-    ultra:'超快速 Asena-1.0 ML',
-    ph:'输入消息... (Shift+Enter = 换行)',
-    hint:"ASENA AI · 中文 · English · O'zbek · Türkçe · 等等",
-    sugg:[
-      {lang:'中文', txt:'简单解释量子计算'},
-      {lang:'中文', txt:'人工智能的未来是什么？'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-    ],
-  },
-  es:{
-    powered:'IMPULSADO POR ASENA-1.0 ML', nc:'Nueva Conversación', convs:'CONVERSACIONES',
-    noc:'No hay conversaciones', guest:'Usuario Invitado', gsub:'Paso 2 para iniciar sesión',
-    sub:"Tu asistente inteligente. Pregunta en cualquier idioma — listo para ayudarte.",
-    ultra:'Asena-1.0 ML ultrarrápido',
-    ph:'Escribe un mensaje... (Shift+Enter = nueva línea)',
-    hint:"ASENA AI · Español · English · O'zbek · Türkçe · y más",
-    sugg:[
-      {lang:'Español', txt:'Cuéntame sobre el futuro de la IA'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  fr:{
-    powered:'PROPULSÉ PAR ASENA-1.0 ML', nc:'Nouvelle Discussion', convs:'CONVERSATIONS',
-    noc:'Pas encore de conversations', guest:'Utilisateur Invité', gsub:'Étape 2',
-    sub:"Votre assistant intelligent. Posez des questions dans n'importe quelle langue.",
-    ultra:"Inférence ultra-rapide d'Asena-1.0 ML",
-    ph:'Tapez un message... (Shift+Enter = nouvelle ligne)',
-    hint:"ASENA AI · Français · English · O'zbek · Türkçe · et plus",
-    sugg:[
-      {lang:'Français', txt:"Explique-moi l'intelligence artificielle"},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  de:{
-    powered:'BETRIEBEN VON ASENA-1.0 ML', nc:'Neues Gespräch', convs:'GESPRÄCHE',
-    noc:'Noch keine Gespräche', guest:'Gastbenutzer', gsub:'Schritt 2 zum Einloggen',
-    sub:'Ihr intelligenter Assistent. Fragen in jeder Sprache.',
-    ultra:'Ultraschnelle Asena-1.0 ML',
-    ph:'Nachricht schreiben... (Shift+Enter = neue Zeile)',
-    hint:"ASENA AI · Deutsch · English · O'zbek · Türkçe · und mehr",
-    sugg:[
-      {lang:'Deutsch', txt:'Erkläre mir KI einfach'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  hi:{
-    powered:'ASENA-1.0 ML द्वारा', nc:'नई चैट', convs:'बातचीत',
-    noc:'कोई बातचीत नहीं', guest:'अतिथि', gsub:'साइन इन चरण 2',
-    sub:'आपका बुद्धिमान सहायक। किसी भी भाषा में पूछें।',
-    ultra:'अल्ट्रा-फास्ट Asena-1.0 ML',
-    ph:'संदेश लिखें... (Shift+Enter = नई पंक्ति)',
-    hint:"ASENA AI · हिन्दी · English · O'zbek · Türkçe · और अधिक",
-    sugg:[
-      {lang:'हिन्दी', txt:'AI का भविष्य क्या है?'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  ja:{
-    powered:'ASENA-1.0 ML 搭載', nc:'新しいチャット', convs:'会話',
-    noc:'まだ会話がありません', guest:'ゲスト', gsub:'ログインステップ2',
-    sub:'どんな言語でも質問してください。',
-    ultra:'超高速 Asena-1.0 ML',
-    ph:'メッセージを入力... (Shift+Enter = 改行)',
-    hint:"ASENA AI · 日本語 · English · O'zbek · Türkçe · その他",
-    sugg:[
-      {lang:'日本語', txt:'AIの未来について話して'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  ko:{
-    powered:'ASENA-1.0 ML 구동', nc:'새 채팅', convs:'대화',
-    noc:'아직 대화가 없습니다', guest:'게스트', gsub:'로그인 2단계',
-    sub:'어떤 언어로든 질문하세요.',
-    ultra:'초고속 Asena-1.0 ML',
-    ph:'메시지 입력... (Shift+Enter = 새 줄)',
-    hint:"ASENA AI · 한국어 · English · O'zbek · Türkçe · 더 보기",
-    sugg:[
-      {lang:'한국어', txt:'AI의 미래에 대해 이야기해 줘'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  kk:{
-    powered:'ASENA-1.0 ML ҚУАТТАЛҒАН', nc:'Жаңа сөйлесу', convs:'СӨЙЛЕСУЛЕР',
-    noc:'Сөйлесулер жоқ', guest:'Қонақ', gsub:'2-қадам',
-    sub:'Кез келген тілде сұрақ қойыңыз.',
-    ultra:'Өте жылдам Asena-1.0 ML',
-    ph:'Хабар жазыңыз... (Shift+Enter = жаңа жол)',
-    hint:"ASENA AI · Қазақша · O'zbek · English · Türkçe · және басқалары",
-    sugg:[
-      {lang:'Қазақша', txt:'AI болашағы туралы айт'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  pt:{
-    powered:'POWERED BY ASENA-1.0 ML', nc:'Nova Conversa', convs:'CONVERSAS',
-    noc:'Sem conversas', guest:'Convidado', gsub:'Passo 2',
-    sub:'Pergunte em qualquer idioma — pronto para ajudar.',
-    ultra:'Asena-1.0 ML ultra-rápido',
-    ph:'Digite uma mensagem... (Shift+Enter = nova linha)',
-    hint:"ASENA AI · Português · English · O'zbek · Türkçe · e mais",
-    sugg:[
-      {lang:'Português', txt:'Fale sobre o futuro da IA'},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
-  it:{
-    powered:'ALIMENTATO DA ASENA-1.0 ML', nc:'Nuova Chat', convs:'CONVERSAZIONI',
-    noc:'Nessuna conversazione', guest:'Ospite', gsub:'Passo 2',
-    sub:'Fai domande in qualsiasi lingua.',
-    ultra:'Asena-1.0 ML ultra-rapido',
-    ph:'Scrivi un messaggio... (Shift+Enter = nuova riga)',
-    hint:"ASENA AI · Italiano · English · O'zbek · Türkçe · e altro",
-    sugg:[
-      {lang:'Italiano', txt:"Parlami del futuro dell'IA"},
-      {lang:'English', txt:'Explain quantum computing simply'},
-      {lang:"O'zbek", txt:"Sun'iy intellekt haqida gapir"},
-      {lang:'Türkçe', txt:'Yapay zeka hakkında konuş'},
-    ],
-  },
+  uz:{ powered:'ASENA-1.0 ML TOMONIDAN', nc:"Yangi suhbat", convs:'SUHBATLAR', noc:"Hali suhbat yo'q", guest:'Mehmon foydalanuvchi', gsub:'Kirish uchun bosqich 2', sub:"Aqlli yordamchingiz. Har qanday tilda savol bering — yordam berishga tayyorman.", ultra:'Ultra-tez Asena-1.0 ML', ph:"Xabar yozing... (Shift+Enter = yangi qator)", hint:"ASENA AI · O'zbek · English · Türkçe · Azərbaycan · va boshqalar", sugg:[{lang:"O'zbek",txt:"Sun'iy intellekt kelajagi haqida gapir"},{lang:'English',txt:'Explain quantum computing simply'},{lang:'Türkçe',txt:'Yapay zekanın geleceği hakkında konuş'},{lang:'Azərbaycan',txt:'Süni intellekt haqqında danış'}] },
+  en:{ powered:'POWERED BY ASENA-1.0 ML', nc:'New Chat', convs:'CONVERSATIONS', noc:'No conversations yet', guest:'Guest User', gsub:'Step 2 to sign in', sub:"Your intelligent assistant. Ask in any language — ready to help you.", ultra:'Ultra-fast Asena-1.0 ML', ph:'Type a message... (Shift+Enter = new line)', hint:"ASENA AI · English · O'zbek · Türkçe · Azərbaycan · and more", sugg:[{lang:'English',txt:'Explain quantum computing simply'},{lang:'English',txt:'Write me a poem about space'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  tr:{ powered:'ASENA-1.0 ML TARAFINDAN', nc:'Yeni Sohbet', convs:'SOHBETLER', noc:'Henüz sohbet yok', guest:'Misafir Kullanıcı', gsub:'Giriş için adım 2', sub:'Akıllı asistanınız. Herhangi bir dilde soru sorun — yardım etmeye hazırım.', ultra:'Ultra hızlı Asena-1.0 ML', ph:'Mesaj yazın... (Shift+Enter = yeni satır)', hint:"ASENA AI · Türkçe · English · O'zbek · Azərbaycan · ve daha fazlası", sugg:[{lang:'Türkçe',txt:'Yapay zekanın geleceği hakkında konuş'},{lang:'Türkçe',txt:'Kuantum bilgisayarı basitçe açıkla'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"}] },
+  az:{ powered:'ASENA-1.0 ML TƏRƏFİNDƏN', nc:'Yeni Söhbət', convs:'SÖHBƏTLƏRİM', noc:'Hələ söhbət yoxdur', guest:'Qonaq İstifadəçi', gsub:'Daxil olmaq üçün addım 2', sub:'Ağıllı köməkçiniz. İstənilən dildə sual verin — kömək etməyə hazıram.', ultra:'Ultra-sürətli Asena-1.0 ML', ph:'Mesaj yazın... (Shift+Enter = yeni sətir)', hint:"ASENA AI · Azərbaycan · O'zbek · English · Türkçe · və daha çox", sugg:[{lang:'Azərbaycan',txt:'Süni intellekt haqqında danış'},{lang:'Azərbaycan',txt:'Kvant hesablamasını izah et'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"}] },
+  ar:{ powered:'مدعوم بـ ASENA-1.0 ML', nc:'محادثة جديدة', convs:'المحادثات', noc:'لا توجد محادثات بعد', guest:'ضيف', gsub:'الخطوة 2 لتسجيل الدخول', sub:'مساعدك الذكي. اسأل بأي لغة — أنا هنا للمساعدة.', ultra:'استنتاج Asena-1.0 ML فائق السرعة', ph:'اكتب رسالة... (Shift+Enter = سطر جديد)', hint:"ASENA AI · العربية · English · Türkçe · O'zbek · والمزيد", sugg:[{lang:'العربية',txt:'اشرح لي الذكاء الاصطناعي'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  'zh-CN':{ powered:'由 ASENA-1.0 ML 驱动', nc:'新对话', convs:'对话', noc:'暂无对话', guest:'访客用户', gsub:'登录第2步', sub:'您的智能助手。用任何语言提问 — 随时准备帮助您。', ultra:'超快速 Asena-1.0 ML', ph:'输入消息... (Shift+Enter = 换行)', hint:"ASENA AI · 中文 · English · O'zbek · Türkçe · 等等", sugg:[{lang:'中文',txt:'简单解释量子计算'},{lang:'中文',txt:'人工智能的未来是什么？'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"}] },
+  es:{ powered:'IMPULSADO POR ASENA-1.0 ML', nc:'Nueva Conversación', convs:'CONVERSACIONES', noc:'No hay conversaciones', guest:'Usuario Invitado', gsub:'Paso 2 para iniciar sesión', sub:"Tu asistente inteligente. Pregunta en cualquier idioma — listo para ayudarte.", ultra:'Asena-1.0 ML ultrarrápido', ph:'Escribe un mensaje... (Shift+Enter = nueva línea)', hint:"ASENA AI · Español · English · O'zbek · Türkçe · y más", sugg:[{lang:'Español',txt:'Cuéntame sobre el futuro de la IA'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  fr:{ powered:'PROPULSÉ PAR ASENA-1.0 ML', nc:'Nouvelle Discussion', convs:'CONVERSATIONS', noc:'Pas encore de conversations', guest:'Utilisateur Invité', gsub:'Étape 2', sub:"Votre assistant intelligent. Posez des questions dans n'importe quelle langue.", ultra:"Inférence ultra-rapide d'Asena-1.0 ML", ph:'Tapez un message... (Shift+Enter = nouvelle ligne)', hint:"ASENA AI · Français · English · O'zbek · Türkçe · et plus", sugg:[{lang:'Français',txt:"Explique-moi l'intelligence artificielle"},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  de:{ powered:'BETRIEBEN VON ASENA-1.0 ML', nc:'Neues Gespräch', convs:'GESPRÄCHE', noc:'Noch keine Gespräche', guest:'Gastbenutzer', gsub:'Schritt 2 zum Einloggen', sub:'Ihr intelligenter Assistent. Fragen in jeder Sprache.', ultra:'Ultraschnelle Asena-1.0 ML', ph:'Nachricht schreiben... (Shift+Enter = neue Zeile)', hint:"ASENA AI · Deutsch · English · O'zbek · Türkçe · und mehr", sugg:[{lang:'Deutsch',txt:'Erkläre mir KI einfach'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  hi:{ powered:'ASENA-1.0 ML द्वारा', nc:'नई चैट', convs:'बातचीत', noc:'कोई बातचीत नहीं', guest:'अतिथि', gsub:'साइन इन चरण 2', sub:'आपका बुद्धिमान सहायक। किसी भी भाषा में पूछें।', ultra:'अल्ट्रा-फास्ट Asena-1.0 ML', ph:'संदेश लिखें... (Shift+Enter = नई पंक्ति)', hint:"ASENA AI · हिन्दी · English · O'zbek · Türkçe · और अधिक", sugg:[{lang:'हिन्दी',txt:'AI का भविष्य क्या है?'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  ja:{ powered:'ASENA-1.0 ML 搭載', nc:'新しいチャット', convs:'会話', noc:'まだ会話がありません', guest:'ゲスト', gsub:'ログインステップ2', sub:'どんな言語でも質問してください。', ultra:'超高速 Asena-1.0 ML', ph:'メッセージを入力... (Shift+Enter = 改行)', hint:"ASENA AI · 日本語 · English · O'zbek · Türkçe · その他", sugg:[{lang:'日本語',txt:'AIの未来について話して'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  ko:{ powered:'ASENA-1.0 ML 구동', nc:'새 채팅', convs:'대화', noc:'아직 대화가 없습니다', guest:'게스트', gsub:'로그인 2단계', sub:'어떤 언어로든 질문하세요.', ultra:'초고속 Asena-1.0 ML', ph:'메시지 입력... (Shift+Enter = 새 줄)', hint:"ASENA AI · 한국어 · English · O'zbek · Türkçe · 더 보기", sugg:[{lang:'한국어',txt:'AI의 미래에 대해 이야기해 줘'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  kk:{ powered:'ASENA-1.0 ML ҚУАТТАЛҒАН', nc:'Жаңа сөйлесу', convs:'СӨЙЛЕСУЛЕР', noc:'Сөйлесулер жоқ', guest:'Қонақ', gsub:'2-қадам', sub:'Кез келген тілде сұрақ қойыңыз.', ultra:'Өте жылдам Asena-1.0 ML', ph:'Хабар жазыңыз... (Shift+Enter = жаңа жол)', hint:"ASENA AI · Қазақша · O'zbek · English · Türkçe · және басқалары", sugg:[{lang:'Қазақша',txt:'AI болашағы туралы айт'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  pt:{ powered:'POWERED BY ASENA-1.0 ML', nc:'Nova Conversa', convs:'CONVERSAS', noc:'Sem conversas', guest:'Convidado', gsub:'Passo 2', sub:'Pergunte em qualquer idioma — pronto para ajudar.', ultra:'Asena-1.0 ML ultra-rápido', ph:'Digite uma mensagem... (Shift+Enter = nova linha)', hint:"ASENA AI · Português · English · O'zbek · Türkçe · e mais", sugg:[{lang:'Português',txt:'Fale sobre o futuro da IA'},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
+  it:{ powered:'ALIMENTATO DA ASENA-1.0 ML', nc:'Nuova Chat', convs:'CONVERSAZIONI', noc:'Nessuna conversazione', guest:'Ospite', gsub:'Passo 2', sub:'Fai domande in qualsiasi lingua.', ultra:'Asena-1.0 ML ultra-rapido', ph:'Scrivi un messaggio... (Shift+Enter = nuova riga)', hint:"ASENA AI · Italiano · English · O'zbek · Türkçe · e altro", sugg:[{lang:'Italiano',txt:"Parlami del futuro dell'IA"},{lang:'English',txt:'Explain quantum computing simply'},{lang:"O'zbek",txt:"Sun'iy intellekt haqida gapir"},{lang:'Türkçe',txt:'Yapay zeka hakkında konuş'}] },
 };
 
 function getT(code:string):UIStr {
@@ -355,7 +160,6 @@ export default function Home() {
   const [activeId, setActiveId] = useState<string|null>(null);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  // ── Sidebar default YOPIQ ──
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -366,7 +170,6 @@ export default function Home() {
   const activeConv = convs.find(c=>c.id===activeId);
 
   useEffect(()=>{ endRef.current?.scrollIntoView({behavior:'smooth'}); },[activeConv?.messages]);
-
   useEffect(()=>{
     const h=(e:KeyboardEvent)=>{ if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();newChat();} };
     window.addEventListener('keydown',h);
@@ -407,27 +210,14 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-[#09090f] text-[#e8e8f2] overflow-hidden" dir={isRTL?'rtl':'ltr'}>
 
-      {/* ── OVERLAY — mobilda sidebar ochilganda orqani qoraytiradi ── */}
+      {/* OVERLAY - mobilda tashqariga bosganda yopiladi */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-20 md:hidden"
-          onClick={()=>setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/60 z-20" onClick={()=>setSidebarOpen(false)}/>
       )}
 
-      {/* ── SIDEBAR — slayd animatsiya ── */}
-      <aside
-        className={`
-          fixed top-0 left-0 h-full z-30
-          flex flex-col border-r border-[#252538] bg-[#0d0d16]
-          transition-transform duration-300 ease-in-out
-          w-[262px]
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          md:relative md:z-auto
-          ${sidebarOpen ? 'md:translate-x-0' : 'md:-translate-x-full md:w-0'}
-          px-[10px] py-[14px]
-        `}
-      >
+      {/* SIDEBAR - overlay ustida, slayd animatsiya */}
+      <aside className={`fixed top-0 left-0 h-full z-30 flex flex-col bg-[#0d0d16] border-r border-[#252538] transition-transform duration-300 ease-in-out w-[262px] px-[10px] py-[14px] ${sidebarOpen?'translate-x-0':'-translate-x-full'}`}>
+
         {/* Logo */}
         <div className="flex items-center gap-3 pb-4 border-b border-[#252538] mb-3">
           <div className="w-9 h-9 min-w-[36px] rounded-[10px] overflow-hidden shadow-[0_0_24px_rgba(139,92,246,0.4)]">
@@ -440,7 +230,7 @@ export default function Home() {
         </div>
 
         {/* New Chat */}
-        <button onClick={newChat} className="flex items-center justify-between bg-[#13131f] border border-[#252538] rounded-[10px] px-3 py-2 text-[13px] cursor-pointer mb-4 hover:border-[#8b5cf6] hover:bg-[#18182a] transition-all">
+        <button onClick={()=>{newChat();setSidebarOpen(false);}} className="flex items-center justify-between bg-[#13131f] border border-[#252538] rounded-[10px] px-3 py-2 text-[13px] cursor-pointer mb-4 hover:border-[#8b5cf6] hover:bg-[#18182a] transition-all">
           <div className="flex items-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span>{s.nc}</span>
@@ -475,17 +265,13 @@ export default function Home() {
         </div>
       </aside>
 
-      {/* ── MAIN ── */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+      {/* MAIN - sidebar fixed bo'lgani uchun main to'liq kenglikda */}
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0 w-full">
 
         {/* Topbar */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#252538] bg-[#09090f] flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            {/* Hamburger — bosganda slayd ochiladi/yopiladi */}
-            <button
-              onClick={()=>setSidebarOpen(v=>!v)}
-              className="p-1.5 rounded-lg text-[#7777a0] hover:text-[#e8e8f2] hover:bg-[#13131f] transition-all"
-            >
+            <button onClick={()=>setSidebarOpen(v=>!v)} className="p-1.5 rounded-lg text-[#7777a0] hover:text-[#e8e8f2] hover:bg-[#13131f] transition-all">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <line x1="3" y1="12" x2="21" y2="12"/>
@@ -511,7 +297,6 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto flex flex-col">
           {!activeId ? (
             <div className="flex-1 flex flex-col items-center justify-center px-5 py-10 gap-4">
-              {/* Markazdagi logo — zoom-pulse animatsiya */}
               <div className="w-[82px] h-[82px] rounded-[22px] overflow-hidden" style={{animation:'zoomPulse 3s ease-in-out infinite',boxShadow:'0 0 50px rgba(139,92,246,0.45)'}}>
                 <img src="/asena-ai-logo.svg" alt="ASENA AI" width="82" height="82" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
               </div>
@@ -539,22 +324,19 @@ export default function Home() {
             <div className="flex flex-col gap-3.5 p-5 flex-1">
               {activeConv?.messages.map(msg=>(
                 <div key={msg.id} className={`flex gap-2.5 max-w-[800px] w-full mx-auto ${msg.role==='user'?'flex-row-reverse':''}`}>
-                  {/* Avatar — AI uchun SVG logo, user uchun U */}
-                  <div className={`w-[30px] h-[30px] min-w-[30px] rounded-lg flex-shrink-0 overflow-hidden ${msg.role==='user'?'bg-[#252538] flex items-center justify-center text-[#7777a0] font-bold text-[13px]':''}`}>
+                  <div className={`w-[30px] h-[30px] min-w-[30px] rounded-lg flex-shrink-0 overflow-hidden ${msg.role==='user'?'bg-[#252538] flex items-center justify-center font-bold text-[13px] text-[#7777a0]':''}`}>
                     {msg.role==='assistant'
-                      ? <img src="/asena-ai-logo.svg" alt="ASENA AI" width="30" height="30" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'8px'}}/>
+                      ? <img src="/asena-ai-logo.svg" alt="AI" width="30" height="30" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
                       : 'U'
                     }
                   </div>
                   <div className={`rounded-xl px-4 py-3 text-[13.5px] leading-[1.75] max-w-[calc(100%-46px)] break-words border ${msg.role==='user'?'bg-[rgba(139,92,246,0.12)] border-[rgba(139,92,246,0.28)]':'bg-[#13131f] border-[#252538]'}`} dangerouslySetInnerHTML={{__html:mdToHtml(msg.content)}}/>
                 </div>
               ))}
-
-              {/* Typing dots */}
               {loading&&(
                 <div className="flex gap-2.5 max-w-[800px] w-full mx-auto">
                   <div className="w-[30px] h-[30px] min-w-[30px] rounded-lg overflow-hidden flex-shrink-0">
-                    <img src="/asena-ai-logo.svg" alt="ASENA AI" width="30" height="30" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'8px'}}/>
+                    <img src="/asena-ai-logo.svg" alt="AI" width="30" height="30" style={{width:'100%',height:'100%',objectFit:'cover'}}/>
                   </div>
                   <div className="bg-[#13131f] border border-[#252538] rounded-xl px-4 py-3">
                     <div className="flex gap-1">
