@@ -13,11 +13,11 @@ export async function upsertUser(firebaseUser: {
   // IP va davlatni aniqlash
   let country = null, countryCode = null, ip = null;
   try {
-    const res = await fetch('https://ipapi.co/json/');
+    const res = await fetch('https://ip-api.com/json/?fields=country,countryCode,query');
     const geo = await res.json();
-    country     = geo.country_name;
-    countryCode = geo.country_code;
-    ip          = geo.ip;
+    country     = geo.country;
+    countryCode = geo.countryCode;
+    ip          = geo.query;
   } catch {}
 
   const { data, error } = await supabase
