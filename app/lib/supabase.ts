@@ -33,6 +33,7 @@ export async function upsertUser(firebaseUser: {
     .select()
     .single();
 
+  console.log('upsertUser result:', data, error);
   return { data, error };
 }
 
