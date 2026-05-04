@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { onAuth, signInWithGoogle, logout } from './lib/firebase';
-import { upsertUser } from './lib/supabase';
+import { upsertUser, saveChat, saveMessage, saveGeneration, incrementUsage } from './lib/supabase';
 import type { User } from 'firebase/auth';
 
 const LANGUAGES = [
@@ -126,6 +126,7 @@ export default function Home(){
   const [uploadedImage,setUploadedImage]=useState<string|null>(null);
   const [uploadedThumb,setUploadedThumb]=useState<string|null>(null);
   const [user,setUser]=useState<User|null>(null);
+  const [supabaseUid,setSupabaseUid]=useState<string|null>(null);
   const [authLoading,setAuthLoading]=useState(true);
   const [loginLoading,setLoginLoading]=useState(false);
 
@@ -139,7 +140,7 @@ export default function Home(){
   const activeConv=convs.find(c=>c.id===activeId);
 
   useEffect(()=>{ if(typeof window==='undefined')return; if((window as any).puter)return; const sc=document.createElement('script');sc.src='https://js.puter.com/v2/';sc.async=true;document.head.appendChild(sc); },[]);
-  useEffect(()=>{ const unsub=onAuth(async u=>{ setUser(u);setAuthLoading(false); if(u)await upsertUser({uid:u.uid,email:u.email!,displayName:u.displayName,photoURL:u.photoURL}); }); return()=>unsub(); },[]);
+  useEffect(()=>{ const unsub=onAuth(async u=>{ setUser(u);setAuthLoading(false); if(u){ const res=await upsertUser({uid:u.uid,email:u.email!,displayName:u.displayName,photoURL:u.photoURL}); if(res?.data?.id)setSupabaseUid(res.data.id); } }); return()=>unsub(); },[]);
   useEffect(()=>{endRef.current?.scrollIntoView({behavior:'smooth'});},[activeConv?.messages]);
   useEffect(()=>{ const h=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();newChat();}}; window.addEventListener('keydown',h);return()=>window.removeEventListener('keydown',h); },[]);
   useEffect(()=>{ if(!showModeMenu)return; const h=()=>setShowModeMenu(false); setTimeout(()=>document.addEventListener('click',h),10); return()=>document.removeEventListener('click',h); },[showModeMenu]);
@@ -184,6 +185,7 @@ export default function Home(){
       setGenStatus('💎 Adding watermark...');
       const wm=await addWatermark(imageUrl);
       incUsage('image');
+      if(supabaseUid){ await incrementUsage(supabaseUid,'image'); await saveGeneration({userId:supabaseUid,type:'image',prompt:originalPrompt,model:'pollinations',fileUrl:imageUrl}); }
       setConvs(prev=>prev.map(c=>c.id===cid?{...c,messages:c.messages.map(m=>m.id===thinkId?{id:thinkId,role:'assistant',content:`Generated: "${originalPrompt}"`,type:'image',mediaUrl:wm,genPrompt:eng}:m)}:c));
     }catch{ setConvs(prev=>prev.map(c=>c.id===cid?{...c,messages:c.messages.map(m=>m.id===thinkId?{...m,content:'⚠️ Image generation error.'}:m)}:c)); }
     finally{setLoading(false);setGenStatus('');}
@@ -209,6 +211,7 @@ export default function Home(){
       }
       if(!videoUrl){ setConvs(prev=>prev.map(c=>c.id===cid?{...c,messages:c.messages.map(m=>m.id===thinkId?{...m,content:'__puter_auth__'}:m)}:c)); return; }
       incUsage('video');
+      if(supabaseUid){ await incrementUsage(supabaseUid,'video'); await saveGeneration({userId:supabaseUid,type:'video',prompt:originalPrompt,model:'puter',fileUrl:videoUrl}); }
       setConvs(prev=>prev.map(c=>c.id===cid?{...c,messages:c.messages.map(m=>m.id===thinkId?{id:thinkId,role:'assistant',content:`Video: "${originalPrompt}"`,type:'video',mediaUrl:videoUrl,genPrompt:eng}:m)}:c));
     }catch(err:any){
       const isPuter=String(err).toLowerCase().includes('auth')||String(err).toLowerCase().includes('sign');
@@ -220,18 +223,32 @@ export default function Home(){
     const text=(override??input).trim();if(!text||loading)return;
     setInput('');if(taRef.current)taRef.current.style.height='auto';
     let cid=activeId;
-    if(!cid){ cid=Date.now().toString(); setConvs(prev=>[{id:cid!,title:text.length>40?text.slice(0,40)+'…':text,messages:[]},...prev]); setActiveId(cid); await new Promise(r=>setTimeout(r,50)); }
+    let dbChatId:string|null=null;
+    if(!cid){
+      cid=Date.now().toString();
+      const title=text.length>40?text.slice(0,40)+'…':text;
+      setConvs(prev=>[{id:cid!,title,messages:[]},...prev]);
+      setActiveId(cid);
+      await new Promise(r=>setTimeout(r,50));
+      // Supabase ga chat saqlash
+      if(supabaseUid){ const dbChat=await saveChat(supabaseUid,null,title); if(dbChat?.id)dbChatId=dbChat.id; }
+    }
     if(genMode==='image'){await generateImage(text,cid!);return;}
     if(genMode==='video'){await generateVideo(text,cid!);return;}
     const userMsg:Message={id:Date.now().toString(),role:'user',content:text};
     setConvs(prev=>prev.map(c=>c.id===cid?{...c,messages:[...c.messages,userMsg]}:c));
+    // Supabase ga user xabarini saqlash
+    if(dbChatId)await saveMessage(dbChatId,'user',text);
     setLoading(true);
     try{
       const cur=convs.find(c=>c.id===cid);
       const history=[...(cur?.messages??[]),userMsg].map(m=>({role:m.role,content:m.content}));
       const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history})});
       const data=await res.json();
-      setConvs(prev=>prev.map(c=>c.id===cid?{...c,messages:[...c.messages,{id:(Date.now()+1).toString(),role:'assistant',content:data.content??'Xatolik.'}]}:c));
+      const reply=data.content??'Xatolik.';
+      setConvs(prev=>prev.map(c=>c.id===cid?{...c,messages:[...c.messages,{id:(Date.now()+1).toString(),role:'assistant',content:reply}]}:c));
+      // Supabase ga AI javobini saqlash
+      if(dbChatId)await saveMessage(dbChatId,'assistant',reply);
     }catch{ setConvs(prev=>prev.map(c=>c.id===cid?{...c,messages:[...c.messages,{id:(Date.now()+1).toString(),role:'assistant',content:'⚠️ Connection error.'}]}:c)); }
     finally{setLoading(false);}
   };
