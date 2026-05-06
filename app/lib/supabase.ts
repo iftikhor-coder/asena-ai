@@ -14,10 +14,10 @@ export async function upsertUser(firebaseUser: {
   let country = null, countryCode = null, ip = null;
   try {
     const res = await fetch('/api/geoip');
-    const geo = await res.json();
-    country     = geo.country;
-    countryCode = geo.countryCode;
-    ip          = geo.ip;
+const geo = await res.json();
+country     = geo.country;
+countryCode = geo.countryCode;
+ip          = geo.ip;
   } catch {}
 
   const { data, error } = await supabase
